@@ -1,0 +1,248 @@
+<title>Landing Options</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Shrikhand&family=Figtree:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--pbg:#EEF3EF;--pfg:#183229;--pmuted:#52716A;--pcard:#fff;--pline:#CFE0D6;--pacc:#B83A62}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--pbg:#101C18;--pfg:#E6F2EC;--pmuted:#9DB8AB;--pcard:#17271F;--pline:#2A4538;--pacc:#F08AA6;color-scheme:dark}}
+:root[data-theme="dark"]{--pbg:#101C18;--pfg:#E6F2EC;--pmuted:#9DB8AB;--pcard:#17271F;--pline:#2A4538;--pacc:#F08AA6;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--pbg);color:var(--pfg);font-family:'Figtree',system-ui,sans-serif;font-size:16px;line-height:1.45;padding-inline:16px;padding-block:24px 70px}
+.wrap{max-width:1260px;margin-inline:auto}
+h1{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:clamp(30px,7vw,42px);line-height:1.08;margin:0;text-wrap:balance}
+.lead{color:var(--pmuted);margin:10px 0 0;max-width:62ch}
+.tog{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.tog button{font:inherit;font-weight:700;padding:9px 16px;border-radius:99px;border:2px solid var(--pfg);background:transparent;color:var(--pfg);cursor:pointer}
+.tog button[aria-pressed="true"]{background:var(--pfg);color:var(--pbg)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,370px),1fr));gap:34px 28px;margin-top:24px}
+.col{min-width:0;display:flex;flex-direction:column;gap:12px;align-items:center}
+.cap{align-self:stretch;display:flex;flex-direction:column;gap:2px}
+.cap b{font-family:'Fraunces',serif;font-size:21px}
+.cap span{color:var(--pmuted);font-size:15px}
+.pick{align-self:stretch;font:inherit;font-weight:800;font-size:17px;padding:13px;border-radius:14px;border:2px solid var(--pfg);background:var(--pfg);color:var(--pbg);cursor:pointer}
+.pick[aria-pressed="true"]{background:#F7D774;color:#183229;border-color:#F7D774}
+.rep{align-self:stretch;font:inherit;font-weight:700;padding:10px;border-radius:12px;border:2px solid var(--pline);background:var(--pcard);color:var(--pfg);cursor:pointer}
+.ads{align-self:stretch;border:2px solid var(--pline);border-radius:14px;background:var(--pcard);padding:0 14px}
+.ads summary{cursor:pointer;font-weight:700;padding:11px 0}
+.ad{border-top:1px dashed var(--pline);padding:10px 0;font-size:15px}.ad b{display:block}.ad p{margin:2px 0}.ad span{color:var(--pmuted);font-size:13.5px}
+:focus-visible{outline:3px solid var(--pacc);outline-offset:3px}
+symbol{overflow:visible}
+.note{margin-top:18px;color:var(--pmuted)}
+.phone{width:min(390px,100%);height:760px;border:9px solid #14201a;border-radius:42px;overflow:hidden;background:#000;box-shadow:0 14px 40px rgba(0,0,0,.2)}
+.grid .phone{--bg:#F3F6F2;--ink:#274A3E;--card:#fff;--soft:#F9E4EA;--blob:#DCEBE4;--edge:#5F8F7B;--bw:1.5px;--sun:#F7D774;--g1:#3C7A5E;--g2:#6DB28B;--g3:#B9DFC7;--pot:#F2A9B8;--pot2:#E58AA0;--sky:#FDF1C9;--water:#A9D6EE;--pop:#B83A62;--popd:#7E2441;--muted:#58786B;--disp:'Fraunces',Georgia,serif;--dw:600;--osh:0 3px 10px rgba(39,74,62,.1);--cardbd:#5F8F7B}
+.grid.sd .phone{--bg:#F3E2BF;--ink:#4A2B1A;--card:#FBF1D8;--soft:#F7C98B;--blob:#F2B25A;--edge:#4A2B1A;--bw:2.5px;--sun:#F6B01C;--g1:#2F5D3A;--g2:#6A9A3A;--g3:#B6C94F;--pot:#E2702D;--pot2:#B4471B;--sky:#FBE7A8;--water:#8CC6C9;--pop:#B9420F;--popd:#7A2A08;--muted:#7A5236;--disp:'Shrikhand',Georgia,serif;--dw:400;--osh:3px 3px 0 #4A2B1A}
+.scroll{height:100%;overflow-y:auto;overflow-x:hidden;background:var(--bg);color:var(--ink);font-family:'Figtree',sans-serif;scrollbar-width:none;position:relative;display:flex;flex-direction:column}
+.scroll::-webkit-scrollbar{display:none}
+.in{padding:14px 18px 8px;display:flex;flex-direction:column;gap:12px;flex:1}
+.in[hidden]{display:none}
+.top{display:flex;justify-content:center}
+.logo{display:flex;align-items:center;gap:8px;font-family:var(--disp);font-weight:var(--dw);font-size:16px}
+.logo svg{width:26px;height:26px;color:var(--g2)}
+.h{font-family:var(--disp);font-weight:var(--dw);font-size:29px;line-height:1.12;margin:0;text-wrap:balance}
+.grid.sd .h{font-size:25px}
+.h3{font-family:var(--disp);font-weight:var(--dw);font-size:22px;line-height:1.15;margin:0}
+.grid.sd .h3{font-size:19px}
+.sub{margin:0;font-size:17px}
+.ask{font-weight:700;font-size:18px;margin:2px 0 0}
+.bar{position:sticky;bottom:0;z-index:5;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));background:var(--bg);border-top:var(--bw) solid var(--edge);box-shadow:0 -8px 22px rgba(0,0,0,.08)}
+.cta{display:flex;width:100%;align-items:center;justify-content:center;gap:10px;font:inherit;font-family:var(--disp);font-weight:var(--dw);font-size:20px;min-height:58px;padding:12px 18px;border:var(--bw) solid var(--edge);border-radius:99px;background:var(--pop);color:#fff;box-shadow:0 4px 0 var(--popd);cursor:pointer}
+.cta.small{min-height:50px;font-size:18px}
+.cta.ghost{background:var(--card);color:var(--ink);box-shadow:var(--osh)}
+.tl{text-align:center;font-size:14px;font-weight:600;margin-top:8px;color:var(--ink);opacity:.8}
+.scene2{position:relative;border-radius:24px;background:var(--blob);overflow:hidden;display:flex;justify-content:center;align-items:flex-end;padding:8px 8px 0}
+.scene2 .rays{position:absolute;inset:-25% -15%;background:linear-gradient(115deg,transparent 28%,rgba(255,255,255,.6) 40%,transparent 52%,rgba(255,255,255,.35) 64%,transparent 76%);animation:rays 9s ease-in-out infinite alternate;pointer-events:none}
+@keyframes rays{from{transform:translateX(-10%);opacity:.45}to{transform:translateX(10%);opacity:.9}}
+.sway{height:132px;width:auto;aspect-ratio:240/260;flex:none;overflow:visible;transform-origin:50% 100%;animation:sway 7s ease-in-out infinite}
+.scene2.big .sway{height:230px}
+@keyframes sway{0%,100%{transform:rotate(-1.8deg)}50%{transform:rotate(1.8deg)}}
+.tipbox{display:flex;flex-direction:column;gap:2px;background:var(--card);border:var(--bw) solid var(--edge);border-radius:16px;padding:10px 12px;font-size:16px}.tipbox b{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.chips3{display:flex;flex-direction:column;gap:10px}
+.chip3,.opt4{position:relative;display:flex;align-items:center;gap:14px;width:100%;min-height:62px;text-align:left;font:inherit;font-weight:700;font-size:18px;color:var(--ink);background:var(--card);border:var(--bw) solid var(--edge);border-radius:18px;padding:8px 40px 8px 12px;box-shadow:var(--osh);cursor:pointer}
+.chip3::after,.opt4::after{content:"\203a";position:absolute;right:16px;font-size:28px;opacity:.55}
+.ic{flex:none;width:44px;height:44px;border:var(--bw) solid var(--edge);border-radius:13px;background:var(--bg);display:grid;place-items:center;color:var(--edge)}.ic svg{width:30px;height:30px}
+.opts4{display:flex;flex-direction:column;gap:12px;margin-top:6px}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{position:relative;display:flex;flex-direction:column;gap:8px;text-align:left;font:inherit;font-weight:700;font-size:17px;line-height:1.25;color:var(--ink);background:var(--card);border:var(--bw) solid var(--edge);border-radius:20px;padding:14px 12px;box-shadow:var(--osh);min-height:140px;cursor:pointer}
+.tile .i{width:46px;height:46px;border-radius:14px;background:var(--bg);display:grid;place-items:center}.tile .i svg{width:32px;height:32px;color:var(--edge)}
+.tagp{align-self:flex-start;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:var(--sun);color:var(--ink);border:var(--bw) solid var(--edge);border-radius:99px;padding:3px 10px}
+.by{margin:-4px 0 0;font-size:14px;font-weight:600;color:var(--muted)}
+.hero3{background:var(--blob);border-radius:22px;display:grid;place-items:center;padding:10px 10px 0}.hp{width:150px;height:auto}
+.as{display:flex;flex-direction:column;gap:10px;margin-top:6px}.as p{margin:0;font-size:17px}
+figure.ph{margin:0}.ph .art{background:var(--blob);border-radius:18px;border:var(--bw) solid var(--edge);padding:6px;overflow:hidden}.ph svg{width:100%;height:auto;display:block}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:6px}
+.pq{margin:14px 0 6px;padding:14px 16px;border-left:5px solid var(--pop);background:var(--card);border-radius:0 16px 16px 0;font-family:var(--disp);font-weight:var(--dw);font-size:22px;line-height:1.2}
+.grid.sd .pq{font-size:19px}
+.inl{background:var(--soft);border:var(--bw) solid var(--edge);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:10px;margin-top:8px}.inl p{margin:0;font-weight:700}
+.fine{font-size:13px;opacity:.75;text-align:center;margin:8px 0}
+.sample{background:var(--card);border:var(--bw) solid var(--edge);border-radius:22px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:0 8px 24px rgba(39,74,62,.12)}
+.ex{align-self:flex-start;font-size:12.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;background:var(--sun);border-radius:99px;padding:4px 10px}
+.sample b{font-family:var(--disp);font-weight:var(--dw);font-size:19px}
+.row1{display:flex;gap:10px;align-items:center;margin-top:4px;font-size:16.5px}
+.bx{flex:none;width:24px;height:24px;border:var(--bw) solid var(--edge);border-radius:7px}
+.x,.w{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-weight:800}.x{background:#FCE8DC;color:#B5501F}.w{background:var(--sun)}
+.s2,.s3{border-top:1.5px dashed var(--edge);padding-top:10px}
+.beats{position:relative;height:130px;margin-top:6px}
+.b{position:absolute;inset:0;margin:0;display:grid;place-items:center;text-align:center;font-family:var(--disp);font-weight:var(--dw);font-size:27px;line-height:1.15;opacity:0;transform:translateY(8px);transition:opacity .7s,transform .7s}
+.grid.sd .b{font-size:23px}
+.b.on{opacity:1;transform:none}
+.adots{display:flex;gap:8px;justify-content:center}.adots i{width:9px;height:9px;border-radius:50%;background:var(--edge);opacity:.25;transition:opacity .4s}.adots i.on{opacity:1}
+#an2{animation:fadein .6s ease both}@keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.scene2 .rays,.sway,#an2{animation:none!important}.b{transition:none}}
+</style>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <mask id="slits" maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
+      <rect width="100" height="100" fill="#fff"/>
+      <g stroke="#000" stroke-width="5" stroke-linecap="round" fill="none">
+        <path d="M6 40 L34 48"/><path d="M8 60 L34 58"/><path d="M20 78 L40 66"/>
+        <path d="M94 40 L66 48"/><path d="M92 60 L66 58"/><path d="M80 78 L60 66"/>
+        <path d="M50 94 L50 40"/><g stroke="none" fill="#000"><circle cx="34" cy="34" r="3.2"/><circle cx="66" cy="34" r="3.2"/><circle cx="30" cy="68" r="3"/><circle cx="70" cy="68" r="3"/><circle cx="50" cy="26" r="2.6"/></g>
+      </g>
+    </mask>
+    <symbol id="leaf" viewBox="0 0 100 100">
+      <path d="M50 96 C18 84 2 56 10 32 C18 8 44 4 50 22 C56 4 82 8 90 32 C98 56 82 84 50 96Z" fill="currentColor" mask="url(#slits)"/>
+    </symbol>
+
+    <g id="leafg"><path d="M50 96 C18 84 2 56 10 32 C18 8 44 4 50 22 C56 4 82 8 90 32 C98 56 82 84 50 96Z" fill="currentColor" stroke="var(--edge)" stroke-width="3.5" stroke-linejoin="round" mask="url(#slits)"/></g>
+    <g id="hl"><path d="M20 37 C3 27 0 12 9 7 C15 4 19 8 20 13 C21 8 25 4 31 7 C40 12 37 27 20 37Z" fill="currentColor" stroke="var(--edge)" stroke-width="2.6" stroke-linejoin="round"/><path d="M20 13 L20 30" stroke="var(--edge)" stroke-width="1.6" stroke-linecap="round" opacity=".55" fill="none"/></g>
+    <g id="fl"><path d="M30 3 C48 5 58 22 52 38 C48 50 40 52 40 60 C40 66 36 71 30 71 C24 71 20 66 20 60 C20 52 12 50 8 38 C2 22 12 5 30 3Z" fill="currentColor" stroke="var(--edge)" stroke-width="2.8" stroke-linejoin="round"/><path d="M30 71 L30 14" stroke="var(--edge)" stroke-width="1.8" stroke-linecap="round" opacity=".5" fill="none"/></g>
+    <g id="blade"><path d="M-2 0 C-18 -50 -14 -110 3 -150 C20 -110 24 -50 14 0Z" fill="currentColor" stroke="var(--edge)" stroke-width="3" stroke-linejoin="round"/><path d="M0 -12 C-6 -60 -2 -100 3 -134" stroke="var(--g3)" stroke-width="3.5" stroke-linecap="round" fill="none"/></g>
+    <symbol id="pot" viewBox="0 0 100 64"><path d="M12 14h76l-8 42a8 8 0 0 1-8 7H28a8 8 0 0 1-8-7z" fill="var(--pot)" stroke="var(--edge)" stroke-width="3" stroke-linejoin="round"/><rect x="6" y="3" width="88" height="15" rx="6" fill="var(--pot2)" stroke="var(--edge)" stroke-width="3"/></symbol>
+    <g id="mstems" fill="none" stroke-linecap="round"><path d="M120 210 C118 170 106 140 66 130"/><path d="M120 210 C124 160 150 140 178 124"/><path d="M120 210 C120 160 118 130 116 102"/><path d="M120 210 C110 188 80 182 52 174"/><path d="M120 210 C135 190 165 186 190 178"/></g>
+    <symbol id="plant-monstera" viewBox="0 0 240 260">
+      <use href="#mstems" stroke="var(--edge)" stroke-width="10"/><use href="#mstems" stroke="var(--g1)" stroke-width="5"/>
+      <use href="#leafg" style="color:var(--g1)" transform="translate(52 174) rotate(-72) scale(.75) translate(-50 -78) rotate(180 50 50)"/>
+      <use href="#leafg" style="color:var(--g1)" transform="translate(190 178) rotate(68) scale(.75) translate(-50 -78) rotate(180 50 50)"/>
+      <use href="#leafg" style="color:var(--g2)" transform="translate(66 130) rotate(-42) scale(1) translate(-50 -78) rotate(180 50 50)"/>
+      <use href="#leafg" style="color:var(--g2)" transform="translate(178 124) rotate(38) scale(1) translate(-50 -78) rotate(180 50 50)"/>
+      <use href="#leafg" style="color:var(--g3)" transform="translate(116 102) rotate(-4) scale(1.02) translate(-50 -78) rotate(180 50 50)"/>
+      <use href="#pot" x="70" y="196" width="100" height="64"/>
+    </symbol>
+    <g id="pvines" fill="none" stroke-linecap="round"><path d="M92 120 C60 150 72 200 56 244"/><path d="M112 124 C102 176 122 206 108 248"/><path d="M148 124 C176 160 160 204 176 244"/><path d="M168 118 C204 140 198 184 208 218"/><path d="M110 80 C100 56 80 46 58 42"/><path d="M132 80 C142 46 162 36 186 34"/><path d="M122 80 C120 58 122 38 124 20"/></g>
+    <symbol id="plant-pothos" viewBox="0 0 240 260">
+      <use href="#pvines" stroke="var(--edge)" stroke-width="8"/><use href="#pvines" stroke="var(--g1)" stroke-width="4"/>
+      <use href="#hl" style="color:var(--g2)" transform="translate(76 148) rotate(30) scale(1.05) translate(-20 -12)"/>
+      <use href="#hl" style="color:var(--g3)" transform="translate(66 196) rotate(-8) scale(1.05) translate(-20 -12)"/>
+      <use href="#hl" style="color:var(--g2)" transform="translate(56 240) rotate(8) scale(1.05) translate(-20 -12)"/>
+      <use href="#hl" style="color:var(--g3)" transform="translate(106 176) rotate(-12) scale(1.05) translate(-20 -12)"/>
+      <use href="#hl" style="color:var(--g2)" transform="translate(108 244) rotate(6) scale(1.05) translate(-20 -12)"/>
+      <use href="#hl" style="color:var(--g2)" transform="translate(162 170) rotate(-20) scale(1.05) translate(-20 -12)"/>
+      <use href="#hl" style="color:var(--g3)" transform="translate(174 240) rotate(5) scale(1.05) translate(-20 -12)"/>
+      <use href="#hl" style="color:var(--g2)" transform="translate(204 168) rotate(-4) scale(1.05) translate(-20 -12)"/>
+      <use href="#hl" style="color:var(--g1)" transform="translate(58 42) rotate(140) scale(1.1) translate(-20 -12)"/>
+      <use href="#hl" style="color:var(--g2)" transform="translate(186 34) rotate(215) scale(1.1) translate(-20 -12)"/>
+      <use href="#hl" style="color:var(--g3)" transform="translate(124 20) rotate(180) scale(1.1) translate(-20 -12)"/>
+      <use href="#pot" x="70" y="66" width="100" height="64"/>
+    </symbol>
+    <symbol id="plant-fiddle" viewBox="0 0 240 260">
+      <path d="M120 210 C116 150 126 90 120 38" fill="none" stroke="var(--edge)" stroke-width="10" stroke-linecap="round"/><path d="M120 210 C116 150 126 90 120 38" fill="none" stroke="var(--g1)" stroke-width="5" stroke-linecap="round"/>
+      <use href="#fl" style="color:var(--g2)" transform="translate(120 186) rotate(-62) scale(.95) translate(-30 -70)"/>
+      <use href="#fl" style="color:var(--g3)" transform="translate(121 160) rotate(60) scale(.95) translate(-30 -70)"/>
+      <use href="#fl" style="color:var(--g1)" transform="translate(122 128) rotate(-55) scale(.95) translate(-30 -70)"/>
+      <use href="#fl" style="color:var(--g2)" transform="translate(124 100) rotate(52) scale(.9) translate(-30 -70)"/>
+      <use href="#fl" style="color:var(--g3)" transform="translate(120 66) rotate(-12) scale(1) translate(-30 -70)"/>
+      <use href="#pot" x="70" y="196" width="100" height="64"/>
+    </symbol>
+    <symbol id="plant-snake" viewBox="0 0 240 260">
+      <use href="#blade" style="color:var(--g1)" transform="translate(98 210) rotate(-16) scale(.95 .78)"/>
+      <use href="#blade" style="color:var(--g1)" transform="translate(138 210) rotate(16) scale(.95 .8)"/>
+      <use href="#blade" style="color:var(--g2)" transform="translate(108 212) rotate(-6) scale(1.05 1.02)"/>
+      <use href="#blade" style="color:var(--g2)" transform="translate(126 212) rotate(8) scale(1.05 .95)"/>
+      <use href="#blade" style="color:var(--g3)" transform="translate(116 214) scale(1.1 1.1)"/>
+      <use href="#pot" x="70" y="196" width="100" height="64"/>
+    </symbol>
+    <g id="ostems" fill="none" stroke-linecap="round"><path d="M120 210 C116 160 98 126 76 110"/><path d="M120 210 C124 150 144 116 172 98"/><path d="M120 210 C120 160 120 130 120 84"/></g>
+    <symbol id="plant-other" viewBox="0 0 240 260">
+      <use href="#ostems" stroke="var(--edge)" stroke-width="10"/><use href="#ostems" stroke="var(--g1)" stroke-width="5"/>
+      <use href="#hl" style="color:var(--g2)" transform="translate(76 110) rotate(140) scale(1.7) translate(-20 -12)"/>
+      <use href="#hl" style="color:var(--g3)" transform="translate(172 98) rotate(220) scale(1.7) translate(-20 -12)"/>
+      <use href="#hl" style="color:var(--g1)" transform="translate(120 84) rotate(180) scale(1.7) translate(-20 -12)"/>
+      <use href="#pot" x="70" y="196" width="100" height="64"/>
+    </symbol>
+    <symbol id="i-sun" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="16" cy="16" r="6" fill="var(--sun)"/><path d="M16 3v4M16 25v4M3 16h4M25 16h4M7 7l3 3M22 22l3 3M25 7l-3 3M10 22l-3 3"/></g></symbol>
+    <symbol id="i-window" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="22" height="24" rx="2.5" fill="var(--sky)"/><path d="M16 4v24M5 16h22"/><circle cx="21" cy="10" r="2.2" fill="var(--sun)"/></g></symbol>
+    <symbol id="i-lamp" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5h12l4 11H6z" fill="var(--sky)"/><path d="M16 16v11M11 28h10"/></g></symbol>
+    <symbol id="i-dim" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4a12 12 0 1 0 7 19A10 10 0 0 1 21 4z" fill="var(--blob)"/></g></symbol>
+    <symbol id="i-q" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="16" r="12" fill="var(--sky)"/><path d="M12 13a4 4 0 1 1 6 3.4c-1.4.9-2 1.7-2 3.1"/><circle cx="16" cy="23" r=".8" fill="currentColor"/></g></symbol>
+    <symbol id="i-cal" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="7" width="22" height="21" rx="3" fill="var(--sky)"/><path d="M5 13h22M11 4v5M21 4v5"/><circle cx="12" cy="19" r="1" fill="currentColor"/><circle cx="20" cy="19" r="1" fill="currentColor"/></g></symbol>
+    <symbol id="i-drop" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3C22 11 26 15 26 20a10 10 0 0 1-20 0c0-5 4-9 10-17z" fill="var(--water)"/><path d="M11 20l4 4 7-8"/></g></symbol>
+    <symbol id="i-droop" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4v8c0 4 6 5 8 12" /><path d="M24 24c-8 3-15-1-15-9 8-1 14 3 15 9z" fill="var(--g3)"/></g></symbol>
+    <symbol id="i-cloud" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 24a6 6 0 0 1-.5-12A8 8 0 0 1 24 10a7 7 0 0 1 0 14z" fill="var(--blob)"/></g></symbol>
+    <symbol id="i-pot" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 12h18l-2.5 15h-13z" fill="var(--pot)"/><rect x="5" y="7" width="22" height="6" rx="2" fill="var(--pot2)"/></g></symbol>
+    <symbol id="i-pot-holes" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8h18l-2.5 14h-13z" fill="var(--pot)"/><rect x="5" y="4" width="22" height="5" rx="2" fill="var(--pot2)"/><path d="M12 26v3M16 26v3M20 26v3" stroke="var(--water)" stroke-width="2.6"/></g></symbol>
+    <symbol id="i-sprout" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 29V15"/><path d="M16 17C16 9 10 7 4 8c0 7 5 10 12 9z" fill="var(--g3)"/><path d="M16 19c0-6 5-9 12-8 0 7-5 10-12 8z" fill="var(--g2)"/></g></symbol>
+    <symbol id="i-fall" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 25C3 12 14 5 27 5c0 12-6 22-21 20z" fill="var(--sun)"/><path d="M6 25L18 13"/></g></symbol>
+    <symbol id="i-snow" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M16 3v26M5 9.5l22 13M5 22.5l22-13"/><circle cx="16" cy="16" r="3" fill="var(--water)"/></g></symbol>
+    <symbol id="i-paw" viewBox="0 0 32 32"><g fill="var(--sun)" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><ellipse cx="16" cy="21" rx="7" ry="5.5"/><circle cx="7" cy="14" r="2.8"/><circle cx="12.5" cy="8.5" r="2.8"/><circle cx="19.5" cy="8.5" r="2.8"/><circle cx="25" cy="14" r="2.8"/></g></symbol>
+    <symbol id="i-kid" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="16" cy="16" r="12" fill="var(--sky)"/><circle cx="11.5" cy="14" r="1" fill="currentColor"/><circle cx="20.5" cy="14" r="1" fill="currentColor"/><path d="M10.5 19.5c3 3.5 8 3.5 11 0"/></g></symbol>
+    <symbol id="i-heart" viewBox="0 0 32 32"><g stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M16 28C4 20 3 10 9 6.5c3.5-1.8 6.5 0 7 3 .5-3 3.5-4.800 7-3C29 10 28 20 16 28z" fill="var(--pot)"/></g></symbol>
+    <symbol id="i-up" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="16" r="12" fill="var(--g3)"/><path d="M16 23V9M10 15l6-6 6 6"/></g></symbol>
+    <symbol id="i-frame" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="24" height="20" rx="2.5" fill="var(--sky)"/><path d="M4 22l7-7 6 6 4-4 7 7"/><circle cx="21" cy="12" r="2" fill="var(--sun)"/></g></symbol>
+    <symbol id="i-box" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l12-6 12 6v13l-12 6-12-6z" fill="var(--sky)"/><path d="M4 10l12 6 12-6M16 16v13"/></g></symbol>
+    <symbol id="i-house" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15L16 4l13 11" /><path d="M6 13v15h20V13z" fill="var(--sky)"/><path d="M13 28v-9h6v9"/></g></symbol>
+    <symbol id="i-check" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="16" r="12" fill="var(--g3)"/><path d="M10 16.500l4 4 8-9"/></g></symbol>
+    <symbol id="scene" viewBox="0 0 360 250">
+      <ellipse cx="180" cy="130" rx="168" ry="112" fill="var(--blob)"/>
+      <g stroke="var(--edge)" stroke-width="3.5" stroke-linecap="round"><circle cx="292" cy="62" r="30" fill="var(--sun)"/><path d="M292 14v10M292 100v10M244 62h10M330 62h10M258 28l7 7M319 89l7 7M326 28l-7 7M265 89l-7 7" fill="none"/></g>
+      <use href="#leafg" style="color:var(--g3)" transform="translate(48 96) rotate(-20) scale(.55) translate(-50 -78) rotate(180 50 50)"/>
+      <use href="#leafg" style="color:var(--g2)" transform="translate(36 190) rotate(30) scale(.42) translate(-50 -78) rotate(180 50 50)"/>
+      <use href="#leafg" style="color:var(--g3)" transform="translate(322 200) rotate(-35) scale(.5) translate(-50 -78) rotate(180 50 50)"/>
+      <use href="#plant-monstera" x="86" y="2" width="190" height="206"/>
+      <path d="M26 236h308" stroke="var(--edge)" stroke-width="4" stroke-linecap="round"/>
+    </symbol>
+  </defs>
+</svg>
+<div class="wrap">
+  <h1>Five landing options</h1>
+  <p class="lead">Every one keeps a clear button fixed at the bottom. Scroll inside each phone. Option 2 plays by itself and moves to its second page when it ends. Option 3 is the long article.</p>
+  <div class="tog" role="group" aria-label="Look"><button type="button" id="sc" aria-pressed="true">Watercolor look</button><button type="button" id="sd" aria-pressed="false">Retro 70s look</button></div>
+  <div class="grid sc" id="grid">
+  <div class="col"><div class="phone "><div class="scroll" id="p1"><div class="in"><div class="top"><div class="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#leaf"/></svg>Green Thumb</div></div><div class="scene2" aria-hidden="true"><div class="rays"></div><svg class="sway" viewBox="0 0 240 260" aria-hidden="true"><use href="#plant-monstera"/></svg></div>
+<h2 class="h">Let’s figure out what your plant needs</h2>
+<p class="sub">Answer one quick question. No rush, no pressure.</p>
+<div class="tipbox"><b>One thing to know</b><span>Many houseplants like to dry out a little between waterings. Check first.</span></div>
+<p class="ask">How did this plant find you?</p>
+<div class="chips3"><button class="chip3" type="button"><span class="ic"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#i-heart"/></svg></span>I inherited it</button><button class="chip3" type="button"><span class="ic"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#i-box"/></svg></span>I bought it</button><button class="chip3" type="button"><span class="ic"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#i-sprout"/></svg></span>It was a gift</button></div></div><div class="bar"><button class="cta" type="button">Show me one thing <span aria-hidden="true">→</span></button><div class="tl">One tap at a time. Stop anytime.</div></div></div></div><div class="cap"><b>1 · Quiet Start</b><span>Calm. One idea, one question, one button.</span></div><details class="ads"><summary>Ad copy that leads here</summary><div class="ad"><b>Not sure what your plant needs?</b><p>Every plant is a little different. Take a quiet minute and answer a few questions about yours.</p><span>Button: Learn more</span></div><div class="ad"><b>Before you water, try this</b><p>Many houseplants like to dry out a bit between drinks. Here’s a simple way to check yours.</p><span>Button: See more</span></div></details><button class="pick" data-k="1" type="button">Pick 1</button></div>
+  <div class="col"><div class="phone"><div class="scroll an" id="p2"><div class="in" id="an1"><div class="top"><div class="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#leaf"/></svg>Green Thumb</div></div><div class="scene2 big" aria-hidden="true"><div class="rays"></div><svg class="sway" viewBox="0 0 240 260" aria-hidden="true"><use href="#plant-monstera"/></svg></div><div class="beats"><p class="b">Some plants hold a lot of memories.</p><p class="b">Caring for one can feel big.</p><p class="b">You don’t have to know it all.</p><p class="b">So, how is your plant today?</p></div><div class="adots" aria-hidden="true"><i></i><i></i><i></i><i></i></div></div>
+<div class="in" id="an2" hidden><div class="top"><div class="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#leaf"/></svg>Green Thumb</div></div><h2 class="h">What’s going on with your plant?</h2><div class="opts4"><button class="opt4" type="button"><span class="ic"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#i-up"/></svg></span>It looks tall or leggy</button><button class="opt4" type="button"><span class="ic"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#i-droop"/></svg></span>Leaves are yellow or droopy</button><button class="opt4" type="button"><span class="ic"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#i-q"/></svg></span>I’m not sure what it needs</button><button class="opt4" type="button"><span class="ic"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#i-box"/></svg></span>I just got it</button></div></div>
+<div class="bar" id="anbar"></div></div></div><button class="rep" id="replay" type="button">Replay the animation</button><div class="cap"><b>2 · Animated Opening</b><span>Four calm lines, then it moves on to the first question by itself.</span></div><details class="ads"><summary>Ad copy that leads here</summary><div class="ad"><b>A plant can hold a lot of memories</b><p>If a plant means something to you, let’s take care of it, gently.</p><span>Button: Learn more</span></div><div class="ad"><b>New plant, big questions?</b><p>Light, water, pots, pets. Answer a few quick questions and see where to begin.</p><span>Button: See more</span></div></details><button class="pick" data-k="2" type="button">Pick 2</button></div>
+  <div class="col"><div class="phone "><div class="scroll" id="p3"><div class="in"><div class="top"><div class="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#leaf"/></svg>Green Thumb</div></div><span class="tagp">Plant guide</span><h2 class="h">A gentle guide to caring for a plant you love</h2><p class="by">Plant care guide</p><p class="sub">Plants can be easier than they look. These six ideas fit most houseplants, big or small.</p><div class="hero3"><svg class="hp" viewBox="0 0 240 260" aria-hidden="true"><use href="#plant-monstera"/></svg></div><section class="as"><h3 class="h3">Check the soil before you water.</h3><figure class="ph"><div class="art"><svg viewBox="0 0 300 170" aria-hidden="true"><rect x="0" y="0" width="300" height="170" fill="none"/><g><rect x="132" y="-10" width="30" height="80" rx="15" fill="#F2C7A5" stroke="var(--edge)" stroke-width="3"/></g><path d="M80 66h140l-10 70a10 10 0 0 1-10 8H100a10 10 0 0 1-10-8z" fill="var(--pot)" stroke="var(--edge)" stroke-width="3" stroke-linejoin="round"/><rect x="70" y="54" width="160" height="20" rx="8" fill="var(--pot2)" stroke="var(--edge)" stroke-width="3"/><ellipse cx="150" cy="56" rx="72" ry="5" fill="#6B4A36"/><g stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round" fill="none"><path d="M246 56v34M241 56h10M241 90h10"/></g><text x="252" y="78" font-size="13" font-weight="700" fill="var(--ink)">2 in</text></svg></div><figcaption>A finger testing the soil in a pot.</figcaption></figure><p>Push a finger about 2 inches into the soil. If it feels dry, water. If it’s still damp, wait a few days.</p></section><section class="as"><h3 class="h3">Bright, indirect light is a good start.</h3><figure class="ph"><div class="art"><svg viewBox="0 0 300 170" aria-hidden="true"><rect x="170" y="14" width="110" height="130" rx="6" fill="var(--sky)" stroke="var(--edge)" stroke-width="3"/><path d="M225 14v130M170 79h110" stroke="var(--edge)" stroke-width="3"/><circle cx="252" cy="42" r="14" fill="var(--sun)" stroke="var(--edge)" stroke-width="3"/><path d="M170 144 L40 160 L40 120Z" fill="var(--sun)" opacity=".35"/><g transform="translate(40 40)"><use href="#plant-other" x="0" y="0" width="100" height="108"/></g><path d="M20 160h260" stroke="var(--edge)" stroke-width="3" stroke-linecap="round"/></svg></div><figcaption>A plant beside a window with soft light.</figcaption></figure><p>Many houseplants like bright light that doesn’t hit them directly. Strong sun through glass can burn leaves. Watch where light falls through the day.</p></section><section class="as"><h3 class="h3">Long vines can be normal.</h3><figure class="ph"><div class="art"><svg viewBox="0 0 300 170" aria-hidden="true"><rect x="146" y="8" width="20" height="150" rx="9" fill="#B89B6E" stroke="var(--edge)" stroke-width="3"/><path d="M156 156 C130 130 180 112 156 84 C132 58 178 44 158 20" fill="none" stroke="var(--edge)" stroke-width="8" stroke-linecap="round"/><path d="M156 156 C130 130 180 112 156 84 C132 58 178 44 158 20" fill="none" stroke="var(--g1)" stroke-width="4" stroke-linecap="round"/><use href="#leafg" style="color:var(--g2)" transform="translate(140 126) rotate(-60) scale(.5) translate(-50 -78) rotate(180 50 50)"/><use href="#leafg" style="color:var(--g3)" transform="translate(166 96) rotate(60) scale(.55) translate(-50 -78) rotate(180 50 50)"/><use href="#leafg" style="color:var(--g2)" transform="translate(142 64) rotate(-55) scale(.5) translate(-50 -78) rotate(180 50 50)"/><use href="#leafg" style="color:var(--g3)" transform="translate(162 36) rotate(40) scale(.45) translate(-50 -78) rotate(180 50 50)"/></svg></div><figcaption>A Monstera vine climbing a wooden pole.</figcaption></figure><p>Climbing plants like Monstera grow long on purpose. In nature they climb trees. A pole or trellis can help hold them up.</p></section><div class="inl"><p>Want help with your own plant?</p><button class="cta small" type="button">Show me one thing <span aria-hidden="true">→</span></button></div><section class="as"><h3 class="h3">Wait before you repot or trim.</h3><figure class="ph"><div class="art"><svg viewBox="0 0 300 170" aria-hidden="true"><path d="M84 40h132l-12 90a10 10 0 0 1-10 8H106a10 10 0 0 1-10-8z" fill="var(--pot)" stroke="var(--edge)" stroke-width="3" stroke-linejoin="round"/><rect x="74" y="26" width="152" height="18" rx="7" fill="var(--pot2)" stroke="var(--edge)" stroke-width="3"/><g fill="none" stroke="#C9A77A" stroke-width="5" stroke-linecap="round"><path d="M138 138 C132 152 140 160 130 168"/><path d="M152 138 C154 152 148 160 156 168"/><path d="M166 138 C174 150 168 160 178 166"/></g><ellipse cx="152" cy="138" rx="22" ry="4" fill="#4B3426"/></svg></div><figcaption>Roots peeking out of a pot’s bottom hole.</figcaption></figure><p>A move is stressful for a plant. Give it a few weeks to settle before big changes. Repot later only if roots look crowded.</p></section><blockquote class="pq">Waiting a little is often the kindest thing you can do.</blockquote><section class="as"><h3 class="h3">Drainage holes help roots breathe.</h3><figure class="ph"><div class="art"><svg viewBox="0 0 300 170" aria-hidden="true"><path d="M92 20h116l-10 78a10 10 0 0 1-10 8H112a10 10 0 0 1-10-8z" fill="var(--pot)" stroke="var(--edge)" stroke-width="3" stroke-linejoin="round"/><rect x="82" y="8" width="136" height="16" rx="7" fill="var(--pot2)" stroke="var(--edge)" stroke-width="3"/><ellipse cx="150" cy="140" rx="84" ry="14" fill="var(--card)" stroke="var(--edge)" stroke-width="3"/><g fill="var(--water)" stroke="var(--edge)" stroke-width="2"><path d="M138 112c5 8 7 11 7 14a7 7 0 0 1-14 0c0-3 2-6 7-14z"/><path d="M162 116c4 7 6 9 6 12a6 6 0 0 1-12 0c0-3 2-5 6-12z"/></g></svg></div><figcaption>Water draining from a pot into a saucer.</figcaption></figure><p>Water needs a way out of the pot. Roots that sit wet can rot. No holes? Keep the plant in a plain pot with holes, set inside the pretty one.</p></section><section class="as"><h3 class="h3">Check if your plant is pet safe.</h3><figure class="ph"><div class="art"><svg viewBox="0 0 300 170" aria-hidden="true"><g transform="translate(180 6)"><use href="#plant-monstera" width="100" height="108"/></g><path d="M170 160h120" stroke="var(--edge)" stroke-width="3" stroke-linecap="round"/><g stroke="var(--edge)" stroke-width="3" stroke-linejoin="round"><ellipse cx="68" cy="128" rx="34" ry="30" fill="var(--sun)"/><circle cx="64" cy="82" r="24" fill="var(--sun)"/><path d="M44 66l6-24 14 14zM84 66l-6-24-14 14z" fill="var(--sun)"/><path d="M96 138c26 4 34-10 28-24" fill="none" stroke-linecap="round"/></g><g fill="var(--edge)"><circle cx="56" cy="82" r="3"/><circle cx="72" cy="82" r="3"/></g><path d="M20 160h120" stroke="var(--edge)" stroke-width="3" stroke-linecap="round"/></svg></div><figcaption>A cat sitting safely away from a plant.</figcaption></figure><p>Many common houseplants can upset pets if chewed, and Monstera is one. Look up your plant’s name on the ASPCA plant list. If you’re unsure, keep it out of reach.</p></section><div class="as"><p>You don’t need to fix everything today. Start with one small check, like the soil. Your plant will show you more over time. If you’d like help with your own plant, answer a few questions.</p></div><p class="fine">General plant-care tips. Not a substitute for a local nursery.</p></div><div class="bar"><button class="cta" type="button">See what it needs <span aria-hidden="true">→</span></button><div class="tl">Not sure where to start? Answer one question.</div></div></div></div><div class="cap"><b>3 · Long Read</b><span>A native, article-style guide with images. The button stays on screen.</span></div><details class="ads"><summary>Ad copy that leads here</summary><div class="ad"><b>Six gentle things to know about houseplants</b><p>Soil checks, light, pots, and pets. A short, plain guide for anyone caring for a plant.</p><span>Button: See more</span></div><div class="ad"><b>Is your Monstera supposed to look like this?</b><p>Long, climbing vines are often normal. Read what to watch for and what can wait.</p><span>Button: Learn more</span></div></details><button class="pick" data-k="3" type="button">Pick 3</button></div>
+  <div class="col"><div class="phone "><div class="scroll" id="p4"><div class="in"><div class="top"><div class="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#leaf"/></svg>Green Thumb</div></div><h2 class="h">Which plant are you caring for?</h2><p class="sub">Pick the closest one. We’ll start there.</p><p class="ask">How did this plant find you?</p>
+<div class="tiles"><button class="tile" type="button"><span class="i"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#i-heart"/></svg></span>I inherited a plant</button><button class="tile" type="button"><span class="i"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#i-box"/></svg></span>I just bought one</button><button class="tile" type="button"><span class="i"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#i-sprout"/></svg></span>Someone gave me one</button><button class="tile" type="button"><span class="i"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#i-house"/></svg></span>I’ve had it a while</button></div></div><div class="bar"><button class="cta" type="button">Check on my plant <span aria-hidden="true">→</span></button><div class="tl">Pick one, then we’ll go slowly.</div></div></div></div><div class="cap"><b>4 · Quiz First</b><span>The first question is the page.</span></div><details class="ads"><summary>Ad copy that leads here</summary><div class="ad"><b>Did you inherit a plant?</b><p>It can feel like a lot. Tell us a bit about it and we’ll help you know where to start.</p><span>Button: Learn more</span></div><div class="ad"><b>Which plant are you caring for?</b><p>Pick the closest match, then see simple first steps. Works for new plants, gifts, and old ones.</p><span>Button: See more</span></div></details><button class="pick" data-k="4" type="button">Pick 4</button></div>
+  <div class="col"><div class="phone "><div class="scroll" id="p5"><div class="in"><div class="top"><div class="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#leaf"/></svg>Green Thumb</div></div><h2 class="h">Here’s what a plant plan can look like</h2><p class="sub">Tell us about your plant and we’ll write steps like these.</p>
+<div class="sample"><span class="ex">Example only. Yours will match your plant.</span>
+<div class="s1"><b>Your first step</b><div class="row1"><span class="bx"></span>Check the soil with a finger, 2 inches down.</div></div>
+<div class="s2"><b>Leave alone</b><div class="row1"><span class="x">×</span>Skip repotting and trimming for now after a move.</div></div>
+<div class="s3"><b>Watch for</b><div class="row1"><span class="w">!</span>Watch for soil that stays wet for many days.</div></div></div></div><div class="bar"><button class="cta" type="button">See what it needs <span aria-hidden="true">→</span></button><div class="tl">Answer a few questions first.</div></div></div></div><div class="cap"><b>5 · Plan Preview</b><span>Shows what you get before you start.</span></div><details class="ads"><summary>Ad copy that leads here</summary><div class="ad"><b>See what plant care steps can look like</b><p>One thing to do first, one to leave alone, one to watch. Take a look at an example.</p><span>Button: See more</span></div><div class="ad"><b>Plant care, one step at a time</b><p>Get simple steps for your plant: what to do, what to wait on, and what to watch.</p><span>Button: Learn more</span></div></details><button class="pick" data-k="5" type="button">Pick 5</button></div>
+  </div>
+  <p class="note" id="msg" role="status"></p>
+</div>
+<script>
+(function(){
+document.querySelectorAll('.pick').forEach(function(b){b.addEventListener('click',function(){
+  document.querySelectorAll('.pick').forEach(function(x){x.setAttribute('aria-pressed','false');x.textContent='Pick '+x.dataset.k});
+  b.setAttribute('aria-pressed','true');b.textContent='Picked '+b.dataset.k;
+  document.getElementById('msg').textContent='Tell me: '+b.dataset.k+'.';
+})});
+var g=document.getElementById('grid'),a=document.getElementById('sc'),d=document.getElementById('sd');
+function look(k){g.className='grid '+k;a.setAttribute('aria-pressed',String(k==='sc'));d.setAttribute('aria-pressed',String(k==='sd'))}
+a.onclick=function(){look('sc')};d.onclick=function(){look('sd')};
+var timers=[];
+function clr(){timers.forEach(clearTimeout);timers=[]}
+function bar2(page){
+  var b=document.getElementById('anbar');
+  b.innerHTML=page===1?'<button class="cta ghost" type="button" id="skip">Skip</button>':'<button class="cta" type="button">See what it needs <span aria-hidden="true">\u2192</span></button><div class="tl">Just one question at a time.</div>';
+  var s=document.getElementById('skip');if(s)s.onclick=function(){clr();page2()};
+}
+function page2(){document.getElementById('an1').hidden=true;var p=document.getElementById('an2');p.hidden=false;bar2(2);document.getElementById('p2').scrollTop=0}
+function run(){
+  clr();var an1=document.getElementById('an1');an1.hidden=false;document.getElementById('an2').hidden=true;bar2(1);
+  var bs=an1.querySelectorAll('.b'),ds=an1.querySelectorAll('.adots i');
+  bs.forEach(function(x){x.classList.remove('on')});ds.forEach(function(x){x.classList.remove('on')});
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){page2();return}
+  bs.forEach(function(x,i){
+    timers.push(setTimeout(function(){bs.forEach(function(y){y.classList.remove('on')});x.classList.add('on');ds.forEach(function(y,j){y.classList.toggle('on',j<=i)})},500+i*2800));
+  });
+  timers.push(setTimeout(page2,500+bs.length*2800+400));
+}
+document.getElementById('replay').onclick=run;run();
+})();
+</script>

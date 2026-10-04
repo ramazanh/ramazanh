@@ -1,0 +1,1227 @@
+<title>Green Thumb Check-In</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: one-card-at-a-time quiz column, sticker-style cards with hard offset shadows, vine progress bar on top. */
+:root{
+  --bg:#EDF5E4; --card:#FFFFFF; --ink:#10281E; --muted:#4A6155; --line:#CADCC0;
+  --leaf:#1B7F4F; --on-leaf:#FFFFFF; --pop:#B83A62; --popd:#7E2441; --on-pop:#FFFFFF; --pop-soft:#FFE3EB; --sun:#FFD54A; --on-sun:#10281E;
+  --good:#17703F; --good-soft:#DDF3E4; --bad:#B5420F; --bad-soft:#FFE9DC; --edge:#10281E; --g1:#14532D; --g2:#2E9E5E; --g3:#86D6A3; --pot:#FF8FAB; --pot2:#E85C86; --blob:#D5EACB; --sky:#FFF1B8; --water:#9AD7FF;
+  --display:'Bricolage Grotesque','Trebuchet MS',system-ui,sans-serif;
+  --body:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0D1A14; --card:#15271E; --ink:#EAF4EA; --muted:#9DB5A6; --line:#27432F;
+  --leaf:#4FD08A; --on-leaf:#06210F; --pop:#FF7FA3; --popd:#9A4A60; --on-pop:#2A0612; --pop-soft:#3A1B27; --sun:#FFD54A; --on-sun:#10281E;
+  --good:#4FD08A; --good-soft:#143826; --bad:#FF9A6B; --bad-soft:#3A2417; --edge:#5FBF8A; --g1:#2C9A5F; --g2:#4FD08A; --g3:#A5EBC3; --pot:#E87C9B; --pot2:#C74B72; --blob:#1D3A2A; --sky:#3B3512; --water:#4FA8D8; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D1A14; --card:#15271E; --ink:#EAF4EA; --muted:#9DB5A6; --line:#27432F;
+  --leaf:#4FD08A; --on-leaf:#06210F; --pop:#FF7FA3; --popd:#9A4A60; --on-pop:#2A0612; --pop-soft:#3A1B27; --sun:#FFD54A; --on-sun:#10281E;
+  --good:#4FD08A; --good-soft:#143826; --bad:#FF9A6B; --bad-soft:#3A2417; --edge:#5FBF8A; --g1:#2C9A5F; --g2:#4FD08A; --g3:#A5EBC3; --pot:#E87C9B; --pot2:#C74B72; --blob:#1D3A2A; --sky:#3B3512; --water:#4FA8D8; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;padding-inline:16px;padding-block:0 110px;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--display);line-height:1.08;margin:0;text-wrap:balance;letter-spacing:-.01em}
+p{margin:0}
+.wrap{max-width:640px;margin-inline:auto}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--pop);outline-offset:3px;border-radius:10px}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:14px 10px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:18px}
+.brand span{white-space:nowrap}.brand{font-size:17px}.brand svg{width:30px;height:30px;flex:none}
+.brand .spacer{flex:1}
+.link{background:none;border:0;padding:6px 2px;font-size:14px;font-weight:600;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+.bar{position:relative;height:12px;margin-top:12px;border:2px solid var(--edge);border-radius:99px;background:var(--card)}
+.bar i{position:absolute;inset:0 auto 0 0;width:0;background:var(--leaf);border-radius:99px;transition:width .5s cubic-bezier(.3,.9,.3,1)}
+.bar b{position:absolute;top:50%;left:0;width:30px;height:30px;margin:-15px 0 0 -15px;transition:left .5s cubic-bezier(.3,.9,.3,1)}
+.steps{display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:var(--muted);margin-top:8px}
+
+/* cards */
+.card{background:var(--card);border:2px solid var(--edge);border-radius:22px;box-shadow:0 5px 0 var(--edge);padding:22px 18px}
+.stack{display:flex;flex-direction:column;gap:18px;margin-top:14px}
+.kicker{display:inline-block;font-size:12.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;background:var(--sun);color:var(--on-sun);padding:4px 10px;border-radius:99px;border:2px solid var(--edge);margin-bottom:14px}
+.kicker.tf{background:var(--pop);color:var(--on-pop)}
+.q{font-size:clamp(26px,6.4vw,34px);font-weight:800}
+.sub{color:var(--muted);margin-top:10px;font-size:16px}
+
+/* options */
+.opts{display:flex;flex-direction:column;gap:10px;margin-top:20px}
+.opt{display:flex;align-items:center;gap:12px;text-align:left;width:100%;background:var(--card);border:2px solid var(--edge);border-radius:16px;padding:14px 16px;font-weight:600;line-height:1.35;box-shadow:0 3px 0 var(--edge);transition:transform .08s,box-shadow .08s,background .15s}
+.opt:hover:not(:disabled){background:var(--good-soft)}
+.opt:active:not(:disabled){transform:translateY(3px);box-shadow:0 0 0 var(--edge)}
+.opt .dot{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--edge)}
+.opt:disabled{cursor:default;opacity:.55;box-shadow:none;transform:translateY(3px)}
+.opt.picked{opacity:1;background:var(--sun);color:var(--on-sun)}
+.opt.picked .dot{background:var(--edge)}
+.opt.right{opacity:1;background:var(--good-soft);border-color:var(--good)}
+.opt.right .dot{background:var(--good);border-color:var(--good)}
+.opt.wrong{opacity:1;background:var(--bad-soft);border-color:var(--bad)}
+.opt.wrong .dot{background:var(--bad);border-color:var(--bad)}
+.tfrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tfrow .opt{justify-content:center;font-family:var(--display);font-weight:800;font-size:22px;padding-block:18px}
+
+/* reply bubble */
+.reply{margin-top:18px;border:2px solid var(--edge);border-radius:18px;padding:16px;background:var(--pop-soft);animation:pop .35s ease both}
+.reply.ok{background:var(--good-soft)}
+.reply.no{background:var(--bad-soft)}
+.reply.tip{background:var(--card)}
+.reply .tag{font-family:var(--display);font-weight:800;font-size:19px;margin-bottom:4px}
+.reply p{font-size:16.5px}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--leaf);color:var(--on-leaf);border:2px solid var(--edge);border-radius:16px;box-shadow:0 4px 0 var(--edge);padding:14px 22px;font-family:var(--display);font-weight:800;font-size:19px;transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(4px);box-shadow:0 0 0 var(--edge)}
+.btn.pop{background:var(--pop);color:var(--on-pop)}
+.btn.ghost{background:var(--card);color:var(--ink)}
+.btn.full{width:100%}
+.next{margin-top:16px}
+.stickybar{position:fixed;left:0;right:0;bottom:0;z-index:6;padding:20px 16px calc(14px + env(safe-area-inset-bottom,0px));background:linear-gradient(to top,var(--bg) 62%,transparent)}
+.stickybar .wrap{max-width:640px}
+.row{display:flex;flex-wrap:wrap;gap:12px}
+
+/* intro */
+.hero{padding-block:14px 4px}
+.hrow{display:flex;gap:10px;align-items:center}
+.htxt{min-width:0;flex:1}
+.hrow .mini{flex:none;width:30%;max-width:130px;height:auto;overflow:visible}
+.landing h1{font-size:clamp(26px,7.4vw,40px)}
+.landing .lead{font-size:17px;margin-top:8px}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tiles .opt{flex-direction:column;align-items:flex-start;gap:8px;padding:12px;font-size:16px}
+.tiles .ic{width:44px;height:44px}
+body.lp{background:linear-gradient(180deg,var(--blob) 0%,var(--bg) 62%)}
+body.lp .top{background:transparent}
+.calm{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;padding-block:6px 10px}
+.calm>*{position:relative;z-index:1}
+.calm .drift{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.fl{position:absolute;width:34px;height:34px;opacity:.4;animation:drift 14s ease-in-out infinite}
+@keyframes drift{0%,100%{transform:translate(0,0) rotate(-8deg)}50%{transform:translate(14px,-22px) rotate(10deg)}}
+.orb{position:relative;width:min(260px,70vw);aspect-ratio:1;display:grid;place-items:center;margin-top:2px}
+.orb i{position:absolute;inset:0;border-radius:50%;background:var(--card);opacity:.55;animation:breathe 8s ease-in-out infinite}
+.orb i:nth-child(2){inset:9%;opacity:.7;animation-delay:.25s}
+.orb i:nth-child(3){inset:19%;opacity:.95;animation-delay:.5s}
+.orbplant{position:relative;width:62%;height:auto;overflow:visible;animation:breathe 8s ease-in-out infinite;animation-delay:.5s}
+@keyframes breathe{0%,100%{transform:scale(.9)}50%{transform:scale(1.06)}}
+.breathe{font-size:15px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0}
+.calm h1{font-size:clamp(28px,7.6vw,40px);max-width:15em}
+.calm .lead{font-size:18px;margin:0;max-width:22em;color:var(--ink)}
+.trust{margin:0;font-size:14px;font-weight:600;color:var(--muted)}
+.calm .welcome{align-self:stretch;margin-top:6px;background:var(--card)}
+.btn{background:var(--pop);color:var(--on-pop)}
+.btn.ghost{background:var(--card);color:var(--ink)}
+.btn.cta{position:relative;width:100%;max-width:360px;font-size:21px;padding:18px 24px;border-radius:99px}
+.btn.cta::after{content:"";position:absolute;inset:-6px;border-radius:99px;border:3px solid var(--pop);opacity:0;animation:ring 2.6s ease-out infinite;pointer-events:none}
+@keyframes ring{0%{opacity:.75;transform:scale(.98)}100%{opacity:0;transform:scale(1.07)}}
+.btn .arr{display:inline-block;animation:nudge 1.6s ease-in-out infinite}
+@keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}
+.btn:hover{filter:brightness(1.06)}
+.opt:not(.pc):not(.tiles .opt):not(.tfrow .opt)::after{content:"\203a";margin-left:auto;font-size:28px;line-height:1;opacity:.55;padding-left:6px}
+.opt:hover:not(:disabled){transform:translateY(-2px)}
+.tiles .opt{position:relative}
+.tiles .opt::after{content:"\203a";position:absolute;right:12px;top:10px;font-size:26px;line-height:1;opacity:.5}
+.stickybar{background:linear-gradient(to top,var(--bg) 65%,transparent)}
+@media (prefers-reduced-motion:reduce){.orb i,.orbplant,.fl,.btn.cta::after,.btn .arr{animation:none!important}}
+.landing .chips{gap:6px;margin-top:12px}
+.landing .chip{font-size:12.5px;padding:3px 9px}
+.fineprint{font-size:13px;color:var(--muted);margin-top:14px;text-align:center}
+.hero h1{font-size:clamp(30px,8.2vw,46px);font-weight:800}
+.landing .scene{max-width:170px}
+symbol{overflow:visible}
+.fig svg{overflow:visible}
+.hero .lead{font-size:18px}
+.hero h1 em{font-style:normal;color:var(--pop);white-space:nowrap}
+.hero .lead{margin-top:10px;color:var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.chip{font-size:14px;font-weight:700;padding:5px 12px;border-radius:99px;border:2px solid var(--edge);background:var(--card)}
+.field{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.field label{font-weight:700}
+.field input{font:inherit;font-size:18px;padding:13px 14px;border:2px solid var(--edge);border-radius:14px;background:var(--bg);color:var(--ink);width:100%}
+.back{background:#eaf3df}
+.welcome{border-radius:18px;border:2px dashed var(--leaf);padding:14px 16px;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
+.welcome p{font-weight:600;min-width:0}
+
+/* result */
+.badge{display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:14px;padding:6px 12px;border-radius:99px;background:var(--sun);color:var(--on-sun);border:2px solid var(--edge)}
+.res h1{font-size:clamp(32px,8.6vw,46px);font-weight:800;margin-top:12px}
+.res h1 span{color:var(--pop)}
+.res .tagline{margin-top:12px;font-size:18px}
+.meter{display:flex;gap:6px;margin-top:16px}
+.meter i{flex:1;height:12px;border:2px solid var(--edge);border-radius:99px;background:var(--card)}
+.meter i.on{background:var(--leaf)}
+.meterlab{font-size:14px;font-weight:600;color:var(--muted);margin-top:6px}
+.sec h2{font-size:26px;font-weight:800}
+.sec .when{display:inline-block;font-size:12.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.items{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:14px}
+.items li{display:flex;gap:12px;align-items:flex-start;min-width:0}
+.items .txt{min-width:0}
+.items b{display:block;font-weight:700}
+.items span.d{color:var(--muted);font-size:16px}
+.chk{flex:none;width:26px;height:26px;margin-top:1px;border:2px solid var(--edge);border-radius:8px;background:var(--bg);display:grid;place-items:center;padding:0}
+.chk[aria-checked="true"]{background:var(--leaf)}
+.chk[aria-checked="true"]::after{content:"";width:6px;height:12px;border:solid var(--on-leaf);border-width:0 3px 3px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.items li.done .txt{opacity:.55;text-decoration:line-through}
+.mark{flex:none;width:26px;height:26px;margin-top:1px;border-radius:50%;border:2px solid var(--edge);display:grid;place-items:center;font-weight:800;font-size:15px;line-height:1}
+.mark.no{background:var(--bad-soft);color:var(--bad);border-color:var(--bad)}
+.mark.eye{background:var(--sun);color:var(--on-sun)}
+.legacy{background:var(--leaf);color:var(--on-leaf)}
+.legacy .items span.d,.legacy .sec .when{color:inherit;opacity:.92}
+.legacy .mark{background:var(--card);color:var(--ink);border-color:var(--edge)}
+details{border:2px solid var(--edge);border-radius:14px;background:var(--card);color:var(--ink);padding:0 14px}
+details+details{margin-top:10px}
+summary{cursor:pointer;font-weight:700;padding:13px 0;list-style:none;display:flex;justify-content:space-between;gap:10px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-weight:800}
+details[open] summary::after{content:"\2013"}
+details ol{margin:0 0 14px;padding-left:22px;display:flex;flex-direction:column;gap:8px;font-size:16px;color:var(--ink)}
+.doc{background:var(--pop-soft)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;font-weight:600;font-size:15px;z-index:9;max-width:calc(100% - 32px)}
+.fine{font-size:13.5px;color:var(--muted);margin-top:6px}
+.sym{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.sym .opt{padding:14px 12px;font-size:16px}
+@media (max-width:420px){.sym{grid-template-columns:1fr}}
+.dx h3{font-size:24px;font-weight:800;margin-top:6px}
+.deco{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.09}
+main{position:relative;z-index:1}
+.scene{display:block;width:100%;max-width:440px;height:auto;margin:4px auto 0}
+.ic{flex:none;width:46px;height:46px;border:2px solid var(--edge);border-radius:14px;background:var(--bg);display:grid;place-items:center;color:var(--edge)}
+.ic svg{width:32px;height:32px}
+.opt.picked .ic{background:var(--card)}
+.plants{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pc{flex-direction:column;text-align:center;justify-content:flex-start;padding:12px 10px 14px;gap:4px}
+.pc svg{overflow:visible;width:100%;max-width:120px;height:118px}
+.plants .opt:last-child{grid-column:1/-1}
+.plants .opt:last-child svg{height:90px}
+.fig{display:flex;justify-content:center;background:var(--blob);border:2px solid var(--edge);border-radius:18px;margin-bottom:16px;padding-top:10px;overflow:hidden}
+.fig svg{width:min(210px,62%);height:auto;display:block}
+.landing{margin-bottom:6px}
+.pillrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.rl{display:flex;gap:10px;align-items:flex-start}
+.rl svg{flex:none;width:34px;height:34px;color:var(--g2)}
+.gate ul{list-style:none;padding:0;margin:16px 0 0;display:flex;flex-direction:column;gap:8px;font-weight:600}
+.gate li{display:flex;gap:10px;align-items:center}
+.gate li svg{width:22px;height:22px;flex:none;color:var(--leaf)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* calm landing: single, solid, always-visible CTA */
+.calm{gap:14px;padding-block:4px 6px}
+.orb{width:clamp(168px,48vw,220px)}
+.orb i{animation:breathe 10s ease-in-out infinite}
+.orbplant{animation:breathe 10s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:scale(.96)}50%{transform:scale(1.04)}}
+.calm h1{font-size:clamp(26px,8vw,32px)}
+.calm .lead{font-size:18px}
+.fineprint{font-size:13.5px;color:var(--muted);margin:2px 0 0}
+.btn{box-shadow:0 4px 0 var(--popd)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--popd)}
+.btn.cta{max-width:none;min-height:58px;font-size:20px;padding:14px 18px;white-space:nowrap}
+.btn.cta::after{display:none}
+.btn .arr{animation:none}
+.stickybar{padding:12px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--bg);border-top:var(--bw) solid var(--edge);box-shadow:0 -8px 22px rgba(0,0,0,.08)}
+.stickybar .wrap{display:flex;flex-direction:column;gap:6px}
+.stickybar .btn{width:100%}
+.stickybar .trust{text-align:center;font-size:14px;color:var(--ink);opacity:.8}
+body{padding-block:0 130px}
+
+/* opening: value first, staged and animated */
+.open{display:flex;flex-direction:column;gap:12px;padding-top:2px}
+.open h1{font-size:clamp(26px,7.4vw,32px)}
+.open .lead{font-size:17px;margin:0}
+.scene2{position:relative;border-radius:24px;background:var(--blob);overflow:hidden;display:flex;justify-content:center;align-items:flex-end;padding:8px 8px 0}
+.scene2 .rays{position:absolute;inset:-25% -15%;background:linear-gradient(115deg,transparent 28%,rgba(255,255,255,.6) 40%,transparent 52%,rgba(255,255,255,.35) 64%,transparent 76%);animation:rays 9s ease-in-out infinite alternate;pointer-events:none}
+@keyframes rays{from{transform:translateX(-10%);opacity:.45}to{transform:translateX(10%);opacity:.9}}
+.scene2 .sway{height:clamp(110px,19vh,170px);width:auto;aspect-ratio:240/260;flex:none;overflow:visible;transform-origin:50% 100%;animation:sway 7s ease-in-out infinite}
+@keyframes sway{0%,100%{transform:rotate(-1.8deg)}50%{transform:rotate(1.8deg)}}
+.rise{opacity:0;transform:translateY(10px);animation:rise .6s ease-out forwards}
+@keyframes rise{to{opacity:1;transform:none}}
+.ask{font-weight:700;font-size:18px;margin:4px 0 0}
+.chips3{display:flex;flex-direction:column;gap:10px}
+.chip3{position:relative;display:flex;align-items:center;gap:14px;width:100%;min-height:66px;text-align:left;font:inherit;font-weight:700;font-size:18px;line-height:1.25;color:var(--ink);background:var(--card);border:var(--bw) solid var(--edge);border-radius:18px;padding:8px 40px 8px 12px;box-shadow:var(--osh);cursor:pointer;transition:transform .12s,background .2s}
+.chip3::after{content:"\203a";position:absolute;right:16px;font-size:28px;opacity:.55}
+.chip3:hover:not(:disabled){transform:translateY(-2px)}
+.chip3:active:not(:disabled){transform:translateY(2px)}
+.chip3.sel{background:var(--sun);color:var(--on-sun)}
+.chip3:disabled{cursor:default}
+.tipcard{display:flex;flex-direction:column;gap:12px}
+.tipcard .q{margin:0}
+.tipart{background:var(--blob);border-radius:18px;display:grid;place-items:center;padding:8px}
+.finger{width:min(100%,260px);height:auto;overflow:visible}
+.finger .fg{animation:poke 4s ease-in-out infinite}
+@keyframes poke{0%,15%{transform:translateY(0)}45%,70%{transform:translateY(36px)}100%{transform:translateY(0)}}
+.finger .rl{animation:rlab 4s ease-in-out infinite}
+@keyframes rlab{0%,35%{opacity:.25}50%,70%{opacity:1}100%{opacity:.25}}
+.tipbody{font-size:18px;margin:0}
+.try{display:flex;align-items:center;gap:12px;font:inherit;font-weight:700;font-size:17px;color:var(--ink);background:var(--card);border:var(--bw) solid var(--edge);border-radius:16px;padding:12px 14px;cursor:pointer;min-height:52px}
+.try .tk{flex:none;width:26px;height:26px;border:var(--bw) solid var(--edge);border-radius:8px;display:grid;place-items:center;background:var(--bg)}
+.try[aria-pressed="true"]{background:var(--good-soft);border-color:var(--good)}
+.try[aria-pressed="true"] .tk{background:var(--leaf)}
+.try[aria-pressed="true"] .tk::after{content:"";width:6px;height:12px;border:solid var(--on-leaf);border-width:0 3px 3px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.btn.ghost.cta{background:var(--card);color:var(--ink);box-shadow:var(--osh)}
+@media (prefers-reduced-motion:reduce){.rise{opacity:1!important;transform:none!important;animation:none!important}.scene2 .rays,.scene2 .sway,.finger .fg,.finger .rl{animation:none!important}.finger .fg{transform:translateY(30px)}.finger .rl{opacity:1}}
+
+.tiny{margin:14px 0 0;font-weight:700;font-size:16px}
+.tiny.ok{color:var(--good)}.tiny.no{color:var(--bad)}
+.fig.crowd{gap:0;padding-inline:6px}
+.fig.crowd svg{width:20%;flex:1 1 0;max-width:80px;height:auto}
+.err{color:var(--bad);font-weight:700;margin:8px 0 0}
+.btn:disabled{opacity:.7;cursor:default}
+
+.qf{display:flex;flex-direction:column;gap:12px;padding-top:2px}
+.qf h1{font-size:clamp(26px,7.4vw,32px)}
+.qf .lead{font-size:17px;margin:0}
+.scene2.small{padding-top:4px}
+.scene2.small .sway{height:clamp(64px,10vh,84px)}
+.tipnote{display:flex;flex-direction:column;gap:2px;background:var(--card);border:var(--bw) solid var(--edge);border-radius:16px;padding:10px 12px;font-size:16px}
+.tipnote b{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.qf .ask{margin:2px 0 -2px}
+.qf .tiles .opt{min-height:84px;padding:8px 10px;gap:6px}
+.qf .tiles .ic{width:36px;height:36px;border-radius:11px}.qf .tiles .ic svg{width:26px;height:26px}
+.qf .fineprint{margin:0}
+.pickmsg{margin:0;min-height:22px;font-weight:700;color:var(--good)}
+.btn.cta:disabled{background:var(--card);color:var(--muted);border:var(--bw) dashed var(--edge);box-shadow:none;opacity:1;cursor:default}
+
+/* article (long read) */
+.lr{display:flex;flex-direction:column;gap:12px;padding-top:2px}
+.lr h1{font-size:clamp(26px,7.4vw,32px)}
+.lr .lead{font-size:17px;margin:0}
+.tagp{align-self:flex-start;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:var(--sun);color:var(--on-sun);border:var(--bw) solid var(--edge);border-radius:99px;padding:3px 10px}
+.by{margin:-4px 0 0;font-size:14px;font-weight:600;color:var(--muted)}
+.hero3{background:var(--blob);border:var(--bw) solid var(--edge);border-radius:22px;display:grid;place-items:center;padding:10px 10px 0}.hero3 svg{width:150px;height:auto}
+.as{display:flex;flex-direction:column;gap:10px;margin-top:8px}.as p{margin:0;font-size:17px}
+.as h3{font-size:22px}
+figure.ph{margin:0}.ph .art{background:var(--blob);border-radius:18px;border:var(--bw) solid var(--edge);padding:6px;overflow:hidden}.ph svg{width:100%;height:auto;display:block}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:6px}
+.pq{margin:14px 0 6px;padding:14px 16px;border-left:5px solid var(--pop);background:var(--card);border-radius:0 16px 16px 0;font-family:var(--display);font-size:22px;line-height:1.2}
+.inl{background:var(--pop-soft);border:var(--bw) solid var(--edge);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:10px;margin-top:8px}.inl p{margin:0;font-weight:700}
+/* plan preview */
+.sample{background:var(--card);border:var(--bw) solid var(--edge);border-radius:22px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--sh)}
+.ex{align-self:flex-start;font-size:12.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;background:var(--sun);color:var(--on-sun);border-radius:99px;padding:4px 10px}
+.sample b{font-family:var(--display);font-size:19px}
+.row1{display:flex;gap:10px;align-items:center;margin-top:4px;font-size:16.5px}
+.bx{flex:none;width:24px;height:24px;border:var(--bw) solid var(--edge);border-radius:7px}
+.sample .x,.sample .w{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-weight:800}.sample .x{background:var(--bad-soft);color:var(--bad)}.sample .w{background:var(--sun);color:var(--on-sun)}
+.sample .s2,.sample .s3{border-top:1.5px dashed var(--edge);padding-top:10px}
+/* growing plant */
+.growscene{position:relative;border-radius:24px;background:var(--blob);overflow:hidden;display:flex;justify-content:center;align-items:flex-end;padding:8px 8px 0}
+.growscene .rays{position:absolute;inset:-25% -15%;background:linear-gradient(115deg,transparent 28%,rgba(255,255,255,.6) 40%,transparent 52%,rgba(255,255,255,.35) 64%,transparent 76%);animation:rays 9s ease-in-out infinite alternate;pointer-events:none}
+.growsvg{position:relative;height:clamp(190px,32vh,260px);width:auto;aspect-ratio:240/260;overflow:visible}
+.gst{stroke-dasharray:1;stroke-dashoffset:1;animation:gdraw 3.6s ease-in-out infinite alternate;animation-delay:var(--d)}
+@keyframes gdraw{0%,12%{stroke-dashoffset:1}60%,100%{stroke-dashoffset:0}}
+.gl{transform-box:fill-box;transform-origin:50% 100%;transform:scale(0);animation:gleaf 3.6s ease-in-out infinite alternate;animation-delay:var(--d)}
+@keyframes gleaf{0%,15%{transform:scale(0)}65%{transform:scale(1.07)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.gst{animation:none!important;stroke-dashoffset:0}.gl{animation:none!important;transform:none}}
+
+/* one screen, no scrolling: compact modes added by fit() */
+body{padding-block:0 118px}
+.tight .q{font-size:clamp(21px,5.6vw,26px)}
+.tight .card{padding:14px}
+.tight .opts{gap:8px;margin-top:12px}
+.tight .opt{padding:9px 12px;font-size:16px;box-shadow:none}
+.tight .tfrow .opt{padding-block:12px;font-size:19px}
+.tight .kicker{margin-bottom:8px}
+.tight .sub{margin-top:6px;font-size:15px}
+.tight .reply{margin-top:10px;padding:12px}
+.tight .reply p{font-size:15.5px}
+.tight .plants{grid-template-columns:repeat(3,1fr);gap:8px}
+.tight .plants .opt:last-child{grid-column:auto}
+.tight .pc{padding:8px 6px 10px;font-size:13.5px}
+.tight .pc svg,.tight .plants .opt:last-child svg{height:58px}
+.tight .scene2.small .sway{height:56px}
+.tight .tipnote{padding:8px 10px;font-size:15px}
+.tight .qf{gap:8px}
+.tight .qf .tiles .opt{min-height:68px}
+.tight .qf .ic,.tight .chip3 .ic{width:34px;height:34px}
+.tight .chip3{min-height:54px;font-size:17px}
+.tight .tipart{padding:4px}.tight .finger{max-height:92px}
+.tight .tipbody{font-size:16px}
+.tight .fig{margin-bottom:10px}.tight .fig svg{width:min(120px,36%)}
+.tight .gate ul{display:none}
+.tight .stickybar{padding:8px 16px calc(8px + env(safe-area-inset-bottom,0px))}
+.tight .btn.cta{min-height:52px;font-size:19px}
+.tighter .scene2,.tighter .growscene,.tighter .tipnote,.tighter .fineprint,.tighter .tipart,.tighter .fig,.tighter .pickmsg:empty{display:none}
+.tighter .stickybar .trust{display:none}
+.tighter .q{font-size:20px}
+.tighter .sub{display:none}
+.tighter .opt{padding:7px 10px}
+.opt.gone{display:none}
+#restart{display:none!important}
+
+.tight .top{padding-block:8px 4px}
+.tight .bar{height:9px;margin-top:6px}
+.tight .steps{margin-top:4px;font-size:12px}
+.tight .brand{font-size:15px}.tight .brand svg{width:24px;height:24px}
+body.tight{padding-block:0 88px}
+body.tighter{padding-block:0 78px}
+.tighter .brand span{display:none}
+.tighter .brand{display:none}
+.tighter .top{padding-block:6px 2px}
+.tight .plants{grid-template-columns:1fr 1fr;gap:8px}
+.tight .pc{flex-direction:row;text-align:left;align-items:center;gap:8px;padding:6px 8px;font-size:13.5px;line-height:1.2;min-width:0}
+.tight .pc span{min-width:0}
+.tight .pc svg,.tight .plants .opt:last-child svg{width:42px;height:44px;flex:none}
+.tight .plants .opt:last-child{grid-column:1/-1}
+.tighter .card{padding:12px}
+.tighter .qf .tiles .opt{min-height:62px}
+.tighter .gate .field{margin-top:10px}
+.tighter .gate p.sub{display:none}
+
+.tighter .kicker{display:none}
+.tighter .sample{padding:10px;gap:6px}
+.tighter .sample .s3{display:none}
+.tighter .row1{font-size:15px;margin-top:2px}
+.tighter .qf h1{font-size:22px}
+.tighter .lead{font-size:15px}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <mask id="slits" maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
+      <rect width="100" height="100" fill="#fff"/>
+      <g stroke="#000" stroke-width="5" stroke-linecap="round" fill="none">
+        <path d="M6 40 L34 48"/><path d="M8 60 L34 58"/><path d="M20 78 L40 66"/>
+        <path d="M94 40 L66 48"/><path d="M92 60 L66 58"/><path d="M80 78 L60 66"/>
+        <path d="M50 94 L50 40"/><g stroke="none" fill="#000"><circle cx="34" cy="34" r="3.2"/><circle cx="66" cy="34" r="3.2"/><circle cx="30" cy="68" r="3"/><circle cx="70" cy="68" r="3"/><circle cx="50" cy="26" r="2.6"/></g>
+      </g>
+    </mask>
+    <symbol id="leaf" viewBox="0 0 100 100">
+      <path d="M50 96 C18 84 2 56 10 32 C18 8 44 4 50 22 C56 4 82 8 90 32 C98 56 82 84 50 96Z" fill="currentColor" mask="url(#slits)"/>
+    </symbol>
+
+    <g id="leafg"><path d="M50 96 C18 84 2 56 10 32 C18 8 44 4 50 22 C56 4 82 8 90 32 C98 56 82 84 50 96Z" fill="currentColor" stroke="var(--edge)" stroke-width="3.5" stroke-linejoin="round" mask="url(#slits)"/></g>
+    <g id="hl"><path d="M20 37 C3 27 0 12 9 7 C15 4 19 8 20 13 C21 8 25 4 31 7 C40 12 37 27 20 37Z" fill="currentColor" stroke="var(--edge)" stroke-width="2.6" stroke-linejoin="round"/><path d="M20 13 L20 30" stroke="var(--edge)" stroke-width="1.6" stroke-linecap="round" opacity=".55" fill="none"/></g>
+    <g id="fl"><path d="M30 3 C48 5 58 22 52 38 C48 50 40 52 40 60 C40 66 36 71 30 71 C24 71 20 66 20 60 C20 52 12 50 8 38 C2 22 12 5 30 3Z" fill="currentColor" stroke="var(--edge)" stroke-width="2.8" stroke-linejoin="round"/><path d="M30 71 L30 14" stroke="var(--edge)" stroke-width="1.8" stroke-linecap="round" opacity=".5" fill="none"/></g>
+    <g id="blade"><path d="M-2 0 C-18 -50 -14 -110 3 -150 C20 -110 24 -50 14 0Z" fill="currentColor" stroke="var(--edge)" stroke-width="3" stroke-linejoin="round"/><path d="M0 -12 C-6 -60 -2 -100 3 -134" stroke="var(--g3)" stroke-width="3.5" stroke-linecap="round" fill="none"/></g>
+    <symbol id="pot" viewBox="0 0 100 64"><path d="M12 14h76l-8 42a8 8 0 0 1-8 7H28a8 8 0 0 1-8-7z" fill="var(--pot)" stroke="var(--edge)" stroke-width="3" stroke-linejoin="round"/><rect x="6" y="3" width="88" height="15" rx="6" fill="var(--pot2)" stroke="var(--edge)" stroke-width="3"/></symbol>
+    <g id="mstems" fill="none" stroke-linecap="round"><path d="M120 210 C118 170 106 140 66 130"/><path d="M120 210 C124 160 150 140 178 124"/><path d="M120 210 C120 160 118 130 116 102"/><path d="M120 210 C110 188 80 182 52 174"/><path d="M120 210 C135 190 165 186 190 178"/></g>
+    <symbol id="plant-monstera" viewBox="0 0 240 260">
+      <use href="#mstems" stroke="var(--edge)" stroke-width="10"/><use href="#mstems" stroke="var(--g1)" stroke-width="5"/>
+      <use href="#leafg" style="color:var(--g1)" transform="translate(52 174) rotate(-72) scale(.75) translate(-50 -78) rotate(180 50 50)"/>
+      <use href="#leafg" style="color:var(--g1)" transform="translate(190 178) rotate(68) scale(.75) translate(-50 -78) rotate(180 50 50)"/>
+      <use href="#leafg" style="color:var(--g2)" transform="translate(66 130) rotate(-42) scale(1) translate(-50 -78) rotate(180 50 50)"/>
+      <use href="#leafg" style="color:var(--g2)" transform="translate(178 124) rotate(38) scale(1) translate(-50 -78) rotate(180 50 50)"/>
+      <use href="#leafg" style="color:var(--g3)" transform="translate(116 102) rotate(-4) scale(1.02) translate(-50 -78) rotate(180 50 50)"/>
+      <use href="#pot" x="70" y="196" width="100" height="64"/>
+    </symbol>
+    <g id="pvines" fill="none" stroke-linecap="round"><path d="M92 120 C60 150 72 200 56 244"/><path d="M112 124 C102 176 122 206 108 248"/><path d="M148 124 C176 160 160 204 176 244"/><path d="M168 118 C204 140 198 184 208 218"/><path d="M110 80 C100 56 80 46 58 42"/><path d="M132 80 C142 46 162 36 186 34"/><path d="M122 80 C120 58 122 38 124 20"/></g>
+    <symbol id="plant-pothos" viewBox="0 0 240 260">
+      <use href="#pvines" stroke="var(--edge)" stroke-width="8"/><use href="#pvines" stroke="var(--g1)" stroke-width="4"/>
+      <use href="#hl" style="color:var(--g2)" transform="translate(76 148) rotate(30) scale(1.05) translate(-20 -12)"/>
+      <use href="#hl" style="color:var(--g3)" transform="translate(66 196) rotate(-8) scale(1.05) translate(-20 -12)"/>
+      <use href="#hl" style="color:var(--g2)" transform="translate(56 240) rotate(8) scale(1.05) translate(-20 -12)"/>
+      <use href="#hl" style="color:var(--g3)" transform="translate(106 176) rotate(-12) scale(1.05) translate(-20 -12)"/>
+      <use href="#hl" style="color:var(--g2)" transform="translate(108 244) rotate(6) scale(1.05) translate(-20 -12)"/>
+      <use href="#hl" style="color:var(--g2)" transform="translate(162 170) rotate(-20) scale(1.05) translate(-20 -12)"/>
+      <use href="#hl" style="color:var(--g3)" transform="translate(174 240) rotate(5) scale(1.05) translate(-20 -12)"/>
+      <use href="#hl" style="color:var(--g2)" transform="translate(204 168) rotate(-4) scale(1.05) translate(-20 -12)"/>
+      <use href="#hl" style="color:var(--g1)" transform="translate(58 42) rotate(140) scale(1.1) translate(-20 -12)"/>
+      <use href="#hl" style="color:var(--g2)" transform="translate(186 34) rotate(215) scale(1.1) translate(-20 -12)"/>
+      <use href="#hl" style="color:var(--g3)" transform="translate(124 20) rotate(180) scale(1.1) translate(-20 -12)"/>
+      <use href="#pot" x="70" y="66" width="100" height="64"/>
+    </symbol>
+    <symbol id="plant-fiddle" viewBox="0 0 240 260">
+      <path d="M120 210 C116 150 126 90 120 38" fill="none" stroke="var(--edge)" stroke-width="10" stroke-linecap="round"/><path d="M120 210 C116 150 126 90 120 38" fill="none" stroke="var(--g1)" stroke-width="5" stroke-linecap="round"/>
+      <use href="#fl" style="color:var(--g2)" transform="translate(120 186) rotate(-62) scale(.95) translate(-30 -70)"/>
+      <use href="#fl" style="color:var(--g3)" transform="translate(121 160) rotate(60) scale(.95) translate(-30 -70)"/>
+      <use href="#fl" style="color:var(--g1)" transform="translate(122 128) rotate(-55) scale(.95) translate(-30 -70)"/>
+      <use href="#fl" style="color:var(--g2)" transform="translate(124 100) rotate(52) scale(.9) translate(-30 -70)"/>
+      <use href="#fl" style="color:var(--g3)" transform="translate(120 66) rotate(-12) scale(1) translate(-30 -70)"/>
+      <use href="#pot" x="70" y="196" width="100" height="64"/>
+    </symbol>
+    <symbol id="plant-snake" viewBox="0 0 240 260">
+      <use href="#blade" style="color:var(--g1)" transform="translate(98 210) rotate(-16) scale(.95 .78)"/>
+      <use href="#blade" style="color:var(--g1)" transform="translate(138 210) rotate(16) scale(.95 .8)"/>
+      <use href="#blade" style="color:var(--g2)" transform="translate(108 212) rotate(-6) scale(1.05 1.02)"/>
+      <use href="#blade" style="color:var(--g2)" transform="translate(126 212) rotate(8) scale(1.05 .95)"/>
+      <use href="#blade" style="color:var(--g3)" transform="translate(116 214) scale(1.1 1.1)"/>
+      <use href="#pot" x="70" y="196" width="100" height="64"/>
+    </symbol>
+    <g id="ostems" fill="none" stroke-linecap="round"><path d="M120 210 C116 160 98 126 76 110"/><path d="M120 210 C124 150 144 116 172 98"/><path d="M120 210 C120 160 120 130 120 84"/></g>
+    <symbol id="plant-other" viewBox="0 0 240 260">
+      <use href="#ostems" stroke="var(--edge)" stroke-width="10"/><use href="#ostems" stroke="var(--g1)" stroke-width="5"/>
+      <use href="#hl" style="color:var(--g2)" transform="translate(76 110) rotate(140) scale(1.7) translate(-20 -12)"/>
+      <use href="#hl" style="color:var(--g3)" transform="translate(172 98) rotate(220) scale(1.7) translate(-20 -12)"/>
+      <use href="#hl" style="color:var(--g1)" transform="translate(120 84) rotate(180) scale(1.7) translate(-20 -12)"/>
+      <use href="#pot" x="70" y="196" width="100" height="64"/>
+    </symbol>
+    <symbol id="i-sun" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="16" cy="16" r="6" fill="var(--sun)"/><path d="M16 3v4M16 25v4M3 16h4M25 16h4M7 7l3 3M22 22l3 3M25 7l-3 3M10 22l-3 3"/></g></symbol>
+    <symbol id="i-window" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="22" height="24" rx="2.5" fill="var(--sky)"/><path d="M16 4v24M5 16h22"/><circle cx="21" cy="10" r="2.2" fill="var(--sun)"/></g></symbol>
+    <symbol id="i-lamp" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5h12l4 11H6z" fill="var(--sky)"/><path d="M16 16v11M11 28h10"/></g></symbol>
+    <symbol id="i-dim" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4a12 12 0 1 0 7 19A10 10 0 0 1 21 4z" fill="var(--blob)"/></g></symbol>
+    <symbol id="i-q" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="16" r="12" fill="var(--sky)"/><path d="M12 13a4 4 0 1 1 6 3.4c-1.4.9-2 1.7-2 3.1"/><circle cx="16" cy="23" r=".8" fill="currentColor"/></g></symbol>
+    <symbol id="i-cal" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="7" width="22" height="21" rx="3" fill="var(--sky)"/><path d="M5 13h22M11 4v5M21 4v5"/><circle cx="12" cy="19" r="1" fill="currentColor"/><circle cx="20" cy="19" r="1" fill="currentColor"/></g></symbol>
+    <symbol id="i-drop" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3C22 11 26 15 26 20a10 10 0 0 1-20 0c0-5 4-9 10-17z" fill="var(--water)"/><path d="M11 20l4 4 7-8"/></g></symbol>
+    <symbol id="i-droop" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4v8c0 4 6 5 8 12" /><path d="M24 24c-8 3-15-1-15-9 8-1 14 3 15 9z" fill="var(--g3)"/></g></symbol>
+    <symbol id="i-cloud" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 24a6 6 0 0 1-.5-12A8 8 0 0 1 24 10a7 7 0 0 1 0 14z" fill="var(--blob)"/></g></symbol>
+    <symbol id="i-pot" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 12h18l-2.5 15h-13z" fill="var(--pot)"/><rect x="5" y="7" width="22" height="6" rx="2" fill="var(--pot2)"/></g></symbol>
+    <symbol id="i-pot-holes" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8h18l-2.5 14h-13z" fill="var(--pot)"/><rect x="5" y="4" width="22" height="5" rx="2" fill="var(--pot2)"/><path d="M12 26v3M16 26v3M20 26v3" stroke="var(--water)" stroke-width="2.6"/></g></symbol>
+    <symbol id="i-sprout" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 29V15"/><path d="M16 17C16 9 10 7 4 8c0 7 5 10 12 9z" fill="var(--g3)"/><path d="M16 19c0-6 5-9 12-8 0 7-5 10-12 8z" fill="var(--g2)"/></g></symbol>
+    <symbol id="i-fall" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 25C3 12 14 5 27 5c0 12-6 22-21 20z" fill="var(--sun)"/><path d="M6 25L18 13"/></g></symbol>
+    <symbol id="i-snow" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M16 3v26M5 9.5l22 13M5 22.5l22-13"/><circle cx="16" cy="16" r="3" fill="var(--water)"/></g></symbol>
+    <symbol id="i-paw" viewBox="0 0 32 32"><g fill="var(--sun)" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><ellipse cx="16" cy="21" rx="7" ry="5.5"/><circle cx="7" cy="14" r="2.8"/><circle cx="12.5" cy="8.5" r="2.8"/><circle cx="19.5" cy="8.5" r="2.8"/><circle cx="25" cy="14" r="2.8"/></g></symbol>
+    <symbol id="i-kid" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="16" cy="16" r="12" fill="var(--sky)"/><circle cx="11.5" cy="14" r="1" fill="currentColor"/><circle cx="20.5" cy="14" r="1" fill="currentColor"/><path d="M10.5 19.5c3 3.5 8 3.5 11 0"/></g></symbol>
+    <symbol id="i-heart" viewBox="0 0 32 32"><g stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M16 28C4 20 3 10 9 6.5c3.5-1.8 6.5 0 7 3 .5-3 3.5-4.800 7-3C29 10 28 20 16 28z" fill="var(--pot)"/></g></symbol>
+    <symbol id="i-up" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="16" r="12" fill="var(--g3)"/><path d="M16 23V9M10 15l6-6 6 6"/></g></symbol>
+    <symbol id="i-frame" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="24" height="20" rx="2.5" fill="var(--sky)"/><path d="M4 22l7-7 6 6 4-4 7 7"/><circle cx="21" cy="12" r="2" fill="var(--sun)"/></g></symbol>
+    <symbol id="i-box" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l12-6 12 6v13l-12 6-12-6z" fill="var(--sky)"/><path d="M4 10l12 6 12-6M16 16v13"/></g></symbol>
+    <symbol id="i-house" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15L16 4l13 11" /><path d="M6 13v15h20V13z" fill="var(--sky)"/><path d="M13 28v-9h6v9"/></g></symbol>
+    <symbol id="i-check" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="16" r="12" fill="var(--g3)"/><path d="M10 16.500l4 4 8-9"/></g></symbol>
+
+    <linearGradient id="gpot" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFC25A"/><stop offset="1" stop-color="#FF8A00"/></linearGradient>
+    <linearGradient id="gleaf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9BEA9B"/><stop offset="1" stop-color="#2FBF4A"/></linearGradient>
+    <symbol id="buddy" viewBox="0 0 120 130">
+      <path d="M60 52V34" stroke="#1B2B6B" stroke-width="5" stroke-linecap="round"/>
+      <path d="M60 40 C40 36 22 22 20 4 C40 4 58 16 60 40Z" fill="url(#gleaf)" stroke="#1B2B6B" stroke-width="4" stroke-linejoin="round"/>
+      <path d="M60 40 C80 36 98 22 100 4 C80 4 62 16 60 40Z" fill="url(#gleaf)" stroke="#1B2B6B" stroke-width="4" stroke-linejoin="round"/>
+      <path d="M52 64h-0" stroke="none"/>
+      <path d="M24 58h72l-8 58a10 10 0 0 1-10 9H42a10 10 0 0 1-10-9z" fill="url(#gpot)" stroke="#1B2B6B" stroke-width="4" stroke-linejoin="round"/>
+      <rect x="14" y="48" width="92" height="20" rx="10" fill="#FFB347" stroke="#1B2B6B" stroke-width="4"/>
+      <path d="M34 76c-2 12 0 22 3 32" stroke="#fff" stroke-opacity=".55" stroke-width="6" stroke-linecap="round" fill="none"/>
+      <ellipse cx="46" cy="90" rx="7" ry="9" fill="#1B2B6B"/><ellipse cx="74" cy="90" rx="7" ry="9" fill="#1B2B6B"/>
+      <circle cx="48" cy="86" r="2.8" fill="#fff"/><circle cx="76" cy="86" r="2.8" fill="#fff"/>
+      <path d="M49 103 Q60 114 71 103" stroke="#1B2B6B" stroke-width="4" stroke-linecap="round" fill="none"/>
+      <circle cx="36" cy="101" r="5" fill="#FF7A9A" opacity=".55"/><circle cx="84" cy="101" r="5" fill="#FF7A9A" opacity=".55"/>
+    </symbol>
+    <symbol id="scene" viewBox="0 0 360 250">
+      <ellipse cx="180" cy="130" rx="168" ry="112" fill="var(--blob)"/>
+      <g stroke="var(--edge)" stroke-width="3.5" stroke-linecap="round"><circle cx="292" cy="62" r="30" fill="var(--sun)"/><path d="M292 14v10M292 100v10M244 62h10M330 62h10M258 28l7 7M319 89l7 7M326 28l-7 7M265 89l-7 7" fill="none"/></g>
+      <use href="#leafg" style="color:var(--g3)" transform="translate(48 96) rotate(-20) scale(.55) translate(-50 -78) rotate(180 50 50)"/>
+      <use href="#leafg" style="color:var(--g2)" transform="translate(36 190) rotate(30) scale(.42) translate(-50 -78) rotate(180 50 50)"/>
+      <use href="#leafg" style="color:var(--g3)" transform="translate(322 200) rotate(-35) scale(.5) translate(-50 -78) rotate(180 50 50)"/>
+      <use href="#plant-monstera" x="86" y="2" width="190" height="206"/>
+      <path d="M26 236h308" stroke="var(--edge)" stroke-width="4" stroke-linecap="round"/>
+    </symbol>
+  </defs>
+</svg>
+<svg class="deco" aria-hidden="true" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice"><use href="#leafg" style="color:var(--g2)" transform="translate(-30 120) rotate(-30) scale(2.2)"/><use href="#leafg" style="color:var(--g3)" transform="translate(330 640) rotate(35) scale(2.6)"/></svg>
+
+<div class="top"><div class="wrap">
+  <div class="brand"><svg style="color:var(--leaf)" aria-hidden="true"><use href="#leaf"/></svg><span>Green Thumb Check-In</span><span class="spacer"></span><span id="restart" hidden></span></div>
+  <div id="prog" hidden>
+    <div class="bar" role="progressbar" aria-label="Quiz progress" aria-valuemin="0" aria-valuemax="100"><i id="pfill"></i><b id="pleaf" style="color:var(--pop)"><svg width="30" height="30" aria-hidden="true"><use href="#leaf"/></svg></b></div>
+    <div class="steps"><span id="plabel"></span><span id="pright"></span></div>
+  </div>
+</div></div>
+
+<main class="wrap" id="app"></main>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+'use strict';
+var KEY='gtc:v2';
+var LV='qf';
+var LONG_HTML='';
+var app=document.getElementById('app');
+var $=function(s){return document.querySelector(s)};
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function store(get,val){try{if(get)return JSON.parse(localStorage.getItem(KEY)||'null');localStorage.setItem(KEY,JSON.stringify(val))}catch(e){return null}}
+
+/* ---------- QUESTIONS ---------- */
+function TF(id,q,answer,ex,extra){
+  return Object.assign({id:id,kind:'tf',label:'True or false?',q:q,answer:answer,ex:ex},extra||{});
+}
+var PLANTS={monstera:'Monstera',pothos:'Pothos',fiddle:'Fiddle leaf fig',snake:'Snake plant',other:'houseplant'};
+var isP=function(p){return function(S){return S.plant===p}};
+
+var Q=[
+{id:'why',kind:'feel',label:'Start here',when:function(){return false},q:'What brings you here today?',sub:'Tap one to start.',opts:[
+ {t:'I inherited a plant. I’m scared.',add:{legacy:2,fear:2},h:'That’s a lot to hold.',r:'Being scared means you care. That’s a great start.'},
+ {t:'I’m still learning',add:{fear:2,history:1},h:'Everyone starts here.',r:'Most of us do. We’ll find your habit together.'},
+ {t:'My plant looks sad',add:{sad:1},h:'Good eye.',r:'Noticing is half of plant care. Let’s find out why.'},
+ {t:'I want it big and lush',add:{grow:2},h:'Picture that leafy corner.',r:'Love it. Light is the big key, so we’ll check yours.'}
+]},
+{id:'plant',kind:'feel',label:'Meet your plant',q:'Which plant are we helping?',sub:'Pick the closest match.',opts:[
+ {t:'Monstera (big split leaves)',set:'monstera',h:'Big and dramatic.',r:'We’ll go deep on yours.'},
+ {t:'Pothos or philodendron vine',set:'pothos',h:'The shelf trailer.',r:'Pothos forgives a lot of mistakes.'},
+ {t:'Fiddle leaf fig',set:'fiddle',h:'Brave choice.',r:'Fiddles seem like divas. We’ll make yours easy.'},
+ {t:'Snake plant',set:'snake',h:'The “unkillable” one.',r:'Most die from too much love. We’ll fix that.'},
+ {t:'Something else, or a jungle',set:'other',h:'A whole jungle.',r:'We’ll make a plan that fits most plants.'}
+]},
+{id:'story',kind:'feel',label:'Its story',q:'Which fits your Monstera best?',when:isP('monstera'),opts:[
+ {t:'Huge and old. Just came to me.',add:{oldpot:2,legacy:1,moved:1},h:'It’s a survivor.',r:'It’s made it this far. For now, stay calm and steady.'},
+ {t:'Huge and old. Mine for a while.',add:{oldpot:1},h:'You know its moods.',r:'That’s a head start. Give it more room, slowly.'},
+ {t:'I’ve had it a year or two',add:{},h:'Good time for habits.',r:'You know it now. Let’s build a simple routine.'},
+ {t:'I have a few of them',add:{},h:'A Monstera family.',r:'One plan covers all of them.'}
+]},
+{id:'light',kind:'feel',label:'Light check',q:'How’s the light where it lives?',opts:[
+ {t:'Bright windows all day',add:{light:3},h:'That’s a gift.',r:'Bright light is great. Let sun in slowly, since sudden strong sun can scorch leaves.'},
+ {t:'Bright room, no direct sun',add:{light:2},h:'Reading-nook light.',r:'Most houseplants love it as much as you would.'},
+ {t:'Dim corner, far from windows',add:{light:1},k:'tip',h:'Dim corners are tough.',r:'Low light makes long, bare stems. A closer window often helps.'},
+ {t:'No idea',add:{light:0},k:'tip',h:'Try the hand test.',r:'At noon, hold your hand over it. A sharp shadow means bright.'}
+]},
+{id:'water',kind:'feel',label:'Watering',q:'How do you decide to water?',opts:[
+ {t:'Same day every week',add:{over:1},h:'A Sunday-routine person.',r:'Plants don’t read calendars. Check the soil first, then pour.'},
+ {t:'I check the soil with a finger',add:{waterpro:1},k:'ok',h:'That’s the pro move.',r:'You already do what experts do. Keep going.'},
+ {t:'When the leaves droop',add:{under:1},h:'You wait for it to speak.',r:'Drooping comes late. A soil check sooner saves it stress.'},
+ {t:'Whenever I remember',add:{under:1,wing:1},h:'Life is busy.',r:'A weekly reminder to check, not water, fixes most of this.'}
+]},
+TF('myth2','A much bigger pot is always better.',false,{
+ ok:'Right, it’s false. Extra soil stays wet and can rot roots. Go up about 2 inches.',
+ wrong:'Easy guess. It’s false. Extra soil stays soggy and can rot roots. Go up about 2 inches.'}),
+{id:'drain',kind:'feel',label:'Pot talk',q:'Does the pot have drainage holes?',opts:[
+ {t:'Yes, and it has a saucer',add:{},k:'ok',h:'Good setup.',r:'Empty the saucer after watering so roots don’t sit in water.'},
+ {t:'No holes, it’s a pretty pot',add:{drain:1},h:'Pretty pots are hard to resist.',r:'Keep it in a plastic pot with holes, set inside the pretty one.'},
+ {t:'I’m not sure',add:{drain:1},h:'Quick check tonight.',r:'Tip the pot and look. Holes keep roots out of puddles.'}
+]},
+TF('myth3','A plant that just moved needs repotting right away.',false,{
+ ok:'Right, it’s false. A move is stressful enough. Wait a few weeks to repot.',
+ wrong:'Easy guess. It’s false. A move is stress enough. Wait a few weeks, unless roots look bad.'}),
+{id:'m1',kind:'feel',label:'Your Monstera',q:'What shape is it in?',when:isP('monstera'),opts:[
+ {t:'Long vines, flops without support',add:{leggy:2,nosupport:1},h:'Slumped like a teenager.',r:'Easy fix: a stake, trellis, or wall hooks. Long vines aren’t a bad sign.'},
+ {t:'Long vines, well supported',add:{leggy:2},h:'You did the hard part.',r:'That trailing look comes from reaching for light. Keep the light good.'},
+ {t:'A little leggy, leaves low down',add:{leggy:1},h:'There’s life low down.',r:'New growth will follow the light you give it.'},
+ {t:'Full and bushy',add:{},k:'ok',h:'Lovely and full.',r:'Steady light will keep it that way.'}
+]},
+TF('m2','Cutting a Monstera stem will hurt it.',false,{
+ ok:'Right, it’s false. A clean cut just above a bump on the stem is fine. Cuttings make a backup plant.',
+ wrong:'Easy guess. It’s false. A clean cut above a stem bump is fine. That piece can root in water, giving you a backup.'},{when:isP('monstera')}),
+{id:'p1',kind:'feel',label:'Your pothos',q:'Are the vines long and sparse?',when:isP('pothos'),opts:[
+ {t:'Yes, long with gaps',add:{leggy:2},h:'Very common.',r:'Usually low light or no trims. Both are easy fixes.'},
+ {t:'Full and bushy',add:{},k:'ok',h:'Gorgeous.',r:'It’s clearly getting what it needs.'}
+]},
+TF('p2','A pothos cutting can grow roots in water.',true,{
+ ok:'Yes, it’s true. Roots show up in a couple of weeks.',
+ wrong:'Sounds too easy, but it’s true. Cut below a stem bump, keep that bump in water, and wait a couple of weeks.'},{when:isP('pothos')}),
+{id:'f1',kind:'feel',label:'Your fiddle',q:'Is it dropping leaves?',when:isP('fiddle'),opts:[
+ {t:'Yes, and it just moved',add:{moved:1,drop:1},h:'Fiddles hate change.',r:'Leaf drop after a move is common. Steady light and water help.'},
+ {t:'Yes, and nothing changed',add:{drop:1,over:1},h:'A head-scratcher.',r:'Check for drafts, then check the soil before each drink.'},
+ {t:'No, it looks fine',add:{},k:'ok',h:'Then it’s happy.',r:'Keep doing what you’re doing.'}
+]},
+TF('f2','Fiddle leaf figs like being moved around.',false,{
+ ok:'Right, it’s false. They like one spot and to be left alone.',
+ wrong:'Kind guess. It’s false. They like one spot, and moving them can drop leaves.'},{when:isP('fiddle')}),
+TF('s1','Snake plants love lots of water.',false,{
+ ok:'Right, it’s false. They store water and like to dry out fully. Too much water kills most.',
+ wrong:'Many people guess that. It’s false. They store water in their leaves. Too much water kills most.'},{when:isP('snake')}),
+{id:'s2',kind:'feel',label:'Your snake plant',q:'How often do you water it?',when:isP('snake'),opts:[
+ {t:'About every week',add:{over:2},h:'A caring routine.',r:'That may be too often. Try every 2 to 4 weeks, once fully dry.'},
+ {t:'Every few weeks',add:{},k:'ok',h:'Right in the zone.',r:'It must like you.'},
+ {t:'Barely ever',add:{},k:'ok',h:'Easy to love.',r:'It’s built for that.'}
+]},
+{id:'g1',kind:'feel',label:'Your plant',q:'What’s your plant upset about?',when:isP('other'),opts:[
+ {t:'Yellow leaves',add:{cx:'yellow'},h:'Hard to miss.',r:'The Plant Doctor will help sort out why.'},
+ {t:'Brown, crispy edges',add:{cx:'brown'},h:'Just a clue.',r:'The Plant Doctor can narrow it down.'},
+ {t:'Drooping',add:{cx:'droop'},h:'Aw, droopy.',r:'Drooping says a lot. We’ll find out why.'},
+ {t:'Bugs or sticky spots',add:{cx:'bugs'},h:'Gross, but common.',r:'It’s fixable, and the Plant Doctor can help.'},
+ {t:'Nothing, I want to do better',add:{},k:'ok',h:'No crisis here.',r:'The perfect time to build good habits.'}
+]},
+{id:'pets',kind:'feel',label:'Safety check',q:'Do pets or kids share the space?',opts:[
+ {t:'Yes, a cat or dog',add:{pets:1},k:'tip',h:'Pets taste everything.',r:'Monstera, pothos and snake plants can upset tummies if chewed. Ask your vet.'},
+ {t:'Yes, small kids',add:{pets:1},k:'tip',h:'Little hands grab things.',r:'Your plan has a safe-spot tip.'},
+ {t:'No, just me',add:{},h:'Just you two.',r:'That keeps your plan simple.'}
+]}
+];
+
+/* ---------- ENGINE ---------- */
+function byId(id){for(var i=0;i<Q.length;i++)if(Q[i].id===id)return Q[i];return null}
+function derive(answers){
+  var mo=new Date().getMonth();
+  var pre=(typeof st!=='undefined'&&st.pre)||null;
+  var S={t:{season:(mo>=2&&mo<=5)?'grow':(mo>=6&&mo<=9)?'slow':'rest'},plant:null,tf:0,ok:0,mistakes:[]};
+  if(pre)Object.keys(pre).forEach(function(k){var v=pre[k];S.t[k]=typeof v==='number'?(S.t[k]||0)+v:v});
+  answers.forEach(function(a){
+    var q=byId(a.id);if(!q)return;
+    if(q.kind==='tf'){S.tf++;if((a.i===0)===q.answer)S.ok++;else S.mistakes.push(q.id)}
+    else{var o=q.opts[a.i];if(!o)return;
+      if(o.set)S.plant=o.set;
+      if(o.add)Object.keys(o.add).forEach(function(k){var v=o.add[k];S.t[k]=typeof v==='number'?(S.t[k]||0)+v:v});
+    }
+  });
+  return S;
+}
+function nextQ(S,answers){
+  var done={};answers.forEach(function(a){done[a.id]=1});
+  for(var i=0;i<Q.length;i++){var q=Q[i];if(!done[q.id]&&(!q.when||q.when(S)))return q}
+  return null;
+}
+function totalQ(S,answers){
+  var n=answers.length,done={};answers.forEach(function(a){done[a.id]=1});
+  Q.forEach(function(q){if(done[q.id])return;
+    var T2=S.plant===null?Object.assign({},S,{plant:'monstera'}):S;
+    if(!q.when||q.when(T2))n++});
+  return n;
+}
+
+/* ---------- VIEW STATE ---------- */
+var st={name:'',answers:[],view:'intro',picked:null};
+
+function setProg(show,pct,label,right){
+  if(isGame()&&label){label=label.replace('Question','Level');right='\u2605 '+st.answers.length}
+  document.body.classList.remove('lp');clearInterval(window._br);
+  $('#prog').hidden=!show;$('#restart').hidden=!show&&st.view!=='result'&&st.view!=='doc';
+  if(!show)return;
+  $('#pfill').style.width=pct+'%';
+  $('#pleaf').style.left=Math.max(2,Math.min(98,pct))+'%';
+  $('.bar').setAttribute('aria-valuenow',Math.round(pct));
+  $('#plabel').textContent=label;$('#pright').textContent=right||'';
+}
+function focusHead(){var h=app.querySelector('h1,h2');if(h){h.tabIndex=-1;try{h.focus({preventScroll:true})}catch(e){}}}
+function toTop(){focusHead();try{window.scrollTo({top:0,behavior:'smooth'})}catch(e){window.scrollTo(0,0)}}
+function toast(m){var t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(function(){t.hidden=true},2200)}
+function save(done,fresh){var old=store(true)||{};store(false,{name:st.name,answers:st.answers,done:!!done,ts:(fresh?Date.now():old.ts)||Date.now(),checks:fresh?{}:(old.checks||{})})}
+function track(e,p){try{p=p||{};p.event=e;p.ts=Date.now();(window.dataLayer=window.dataLayer||[]).push(p)}catch(x){}}
+
+/* ---------- ILLUSTRATION HELPERS ---------- */
+var PSYM={monstera:'plant-monstera',pothos:'plant-pothos',fiddle:'plant-fiddle',snake:'plant-snake',other:'plant-other'};
+['plant','drain','pets','p1','f1','s2','g1'].forEach(function(id){var q=byId(id);if(q)q.opts.forEach(function(o){o.r=''})});
+[0,1].forEach(function(i){byId('light').opts[i].r=''});
+['myth3','m2','p2','f2','s1'].forEach(function(id){var q=byId(id);if(q)q.quick=true});
+var IC={why:['i-heart','i-sprout','i-droop','i-up'],light:['i-window','i-lamp','i-dim','i-q'],water:['i-cal','i-drop','i-droop','i-cloud'],drain:['i-pot-holes','i-pot','i-q'],season:['i-sprout','i-fall','i-snow'],pets:['i-paw','i-kid','i-heart'],recent:['i-box','i-house'],goal:['i-heart','i-up','i-sprout','i-frame']};
+Object.keys(IC).forEach(function(id){var q=byId(id);if(q)q.opts.forEach(function(o,i){o.ic=IC[id][i]})});
+function svgUse(id,vb,cls){return '<svg'+(cls?' class="'+cls+'"':'')+' viewBox="'+vb+'" aria-hidden="true"><use href="#'+id+'"/></svg>'}
+function optHTML(q,o,i){
+  if(q.id==='plant')return '<button class="opt pc" data-i="'+i+'">'+svgUse(PSYM[o.set],'0 0 240 260')+'<span>'+esc(o.t)+'</span></button>';
+  var lead=o.ic?'<span class="ic">'+svgUse(o.ic,'0 0 32 32')+'</span>':'<span class="dot"></span>';
+  return '<button class="opt" data-i="'+i+'">'+lead+'<span>'+esc(o.t)+'</span></button>';
+}
+
+/* ---------- LANDING (first question lives on the landing page) ---------- */
+function heroHTML(){
+  var saved=store(true),w='';
+  if(saved&&saved.done&&saved.answers&&saved.answers.length){
+    var days=saved.ts?Math.floor((Date.now()-saved.ts)/86400000):0;
+    w='<div class="welcome" style="margin-top:12px"><p>Welcome back'+(saved.name?', '+esc(saved.name):'')+'. '+(days>=7?'It’s been '+days+' days. How do the leaves look?':'Your plan is saved here.')+'</p><button class="btn ghost" id="resume" style="padding:10px 16px;font-size:16px">'+(days>=7?'Check in':'See my plan')+'</button></div>';
+  }
+  return '<section class="hero landing"><div class="hrow"><div class="htxt"><h1>Scared to <em>kill</em> your inherited plant?</h1><p class="lead">Answer a few questions. Get a calm, simple plan.</p></div>'+svgUse('plant-monstera','0 0 240 260','mini')+'</div>'+
+   '<div class="chips"><span class="chip">3 minutes</span><span class="chip">No judgment</span><span class="chip">No sign-up</span></div>'+w+'</section>';
+}
+function welcomeHTML(){
+  var saved=store(true);
+  if(saved&&saved.done&&saved.answers&&saved.answers.length){
+    var days=saved.ts?Math.floor((Date.now()-saved.ts)/86400000):0;
+    return '<div class="welcome"><p>Welcome back'+(saved.name?', '+esc(saved.name):'')+'. '+(days>=7?'It\u2019s been '+days+' days. How do the leaves look?':'Your plan is saved here.')+'</p><button class="btn ghost" id="resume" style="padding:10px 16px;font-size:16px">'+(days>=7?'Check in':'See my plan')+'</button></div>';
+  }
+  return '';
+}
+function bindResume(){
+  var rs=$('#resume');if(rs)rs.onclick=function(){var sv=store(true);st.name=sv.name||'';st.answers=sv.answers;track('return_visit');if(sv.ts&&Date.now()-sv.ts>=7*86400000)doctor();else result()};
+}
+function landing(){
+  st.view='open1';st.answers=[];st.mid=false;st.i1=false;st.i2=false;st.picked=null;st.pre=null;st.found=null;setProg(false);
+  document.body.classList.add('lp');$('#restart').hidden=true;track('view_s1',{lv:LV});
+  var f={qf:landingQF,long:landingLong,plan:landingPlan,grow:landingGrow,game:function(){foundPage()}}[LV]||landingQF;f();
+  window.scrollTo(0,0);
+}
+function landingBar(label,line,id){return '<div class="stickybar"><div class="wrap"><button class="btn cta" id="'+id+'">'+label+' <span aria-hidden="true">\u2192</span></button><p class="trust">'+line+'</p></div></div>'}
+function landingLong(){
+  app.innerHTML=LONG_HTML+landingBar('See what it needs','Not sure where to start? Answer one question.','go1');
+  var lr=app.querySelector('.lr');if(lr)lr.insertAdjacentHTML('afterbegin',welcomeHTML());
+  $('#go1').onclick=function(){track('cta_click',{w:'sticky'});foundPage()};
+  var il=$('#lrcta');if(il)il.onclick=function(){track('cta_click',{w:'inline'});foundPage()};
+  bindResume();
+}
+function landingPlan(){
+  app.innerHTML='<section class="qf"><h1>Here\u2019s what a plant plan can look like</h1><p class="lead">Tell us about your plant and we\u2019ll write steps like these.</p>'+welcomeHTML()+
+   '<div class="sample"><span class="ex">Example only. Yours will match your plant.</span>'+
+   '<div class="s1"><b>Your first step</b><div class="row1"><span class="bx"></span>Check the soil with a finger, 2 inches down.</div></div>'+
+   '<div class="s2"><b>Leave alone</b><div class="row1"><span class="x">\u00d7</span>Skip repotting and trimming for now after a move.</div></div>'+
+   '<div class="s3"><b>Watch for</b><div class="row1"><span class="w">!</span>Watch for soil that stays wet for many days.</div></div></div>'+
+   '<div class="tipnote"><b>One thing to know</b><span>Many houseplants like to dry out a little between waterings. Check first.</span></div>'+
+   '<p class="fineprint">Based on standard houseplant care guidance. Not a substitute for a local nursery.</p></section>'+landingBar('Check on my plant','About 2 minutes. No sign-up.','go1');
+  $('#go1').onclick=function(){track('cta_click');foundPage()};bindResume();
+}
+function growSVG(){
+  var stems=['M120 210 C118 170 106 140 66 130','M120 210 C124 160 150 140 178 124','M120 210 C120 160 118 130 116 102','M120 210 C110 188 80 182 52 174','M120 210 C135 190 165 186 190 178'];
+  var h='<svg class="growsvg" viewBox="0 0 240 260" aria-hidden="true"><circle cx="196" cy="48" r="22" fill="var(--sun)" stroke="var(--edge)" stroke-width="3"/>';
+  stems.forEach(function(d,i){var dl=(i*.25).toFixed(2)+'s';h+='<path class="gst" pathLength="1" style="--d:'+dl+'" d="'+d+'" fill="none" stroke="var(--edge)" stroke-width="10" stroke-linecap="round"/><path class="gst" pathLength="1" style="--d:'+dl+'" d="'+d+'" fill="none" stroke="var(--g1)" stroke-width="5" stroke-linecap="round"/>'});
+  var leaves=[[52,174,-72,.75,'--g1',1.1],[190,178,68,.75,'--g1',1.3],[66,130,-42,1,'--g2',1.5],[178,124,38,1,'--g2',1.7],[116,102,-4,1.02,'--g3',1.9]];
+  leaves.forEach(function(l){h+='<g class="gl" style="--d:'+l[5]+'s"><use href="#leafg" style="color:var('+l[4]+')" transform="translate('+l[0]+' '+l[1]+') rotate('+l[2]+') scale('+l[3]+') translate(-50 -78) rotate(180 50 50)"/></g>'});
+  h+='<use href="#pot" x="70" y="196" width="100" height="64"/></svg>';
+  return h;
+}
+function landingGrow(){
+  app.innerHTML='<section class="qf"><div class="growscene" aria-hidden="true"><div class="rays"></div>'+growSVG()+'</div>'+
+   '<h1>Good care is small and steady</h1><p class="lead">Tell us about your plant. We\u2019ll show you what it needs.</p>'+welcomeHTML()+
+   '<div class="tipnote"><b>One thing to know</b><span>Many houseplants like to dry out a little between waterings. Check first.</span></div>'+
+   '<p class="fineprint">Based on standard houseplant care guidance. Not a substitute for a local nursery.</p></section>'+landingBar('See what it needs','About 2 minutes. No sign-up.','go1');
+  $('#go1').onclick=function(){track('cta_click');foundPage()};bindResume();
+}
+function foundPage(){
+  st.view='found';setProg(false);document.body.classList.add('lp');$('#restart').hidden=true;track('view_found');
+  var tiles=['inherit','bought','gift','awhile'].map(function(k){var o=FOUND[k];return '<button class="opt" data-k="'+k+'"><span class="ic" aria-hidden="true">'+svgUse(o.ic,'0 0 32 32')+'</span><span>'+esc(o.t)+'</span></button>'}).join('');
+  app.innerHTML='<section class="qf"><h1>How did this plant find you?</h1><p class="lead">One tap. We\u2019ll start there.</p><div class="opts tiles" role="radiogroup" aria-label="How did this plant find you?">'+tiles+'</div><p class="pickmsg" id="pm" role="status"></p>'+
+   (LV==='game'?'':'<p><button class="link" id="goland">\u2190 Back</button></p>')+'</section>'+
+   '<div class="stickybar"><div class="wrap"><button class="btn cta" id="cont" disabled>Choose one to continue</button><p class="trust">About 2 minutes. No sign-up.</p></div></div>';
+  app.querySelectorAll('.opt').forEach(function(b){b.onclick=function(){
+    var k=b.getAttribute('data-k');st.found=k;track('tap1_found',{k:k});burst(b);
+    app.querySelectorAll('.opt').forEach(function(x){x.classList.toggle('picked',x===b);x.setAttribute('aria-checked',String(x===b))});
+    $('#pm').textContent=FOUND[k].msg;
+    var c=$('#cont');c.disabled=false;c.innerHTML='Continue <span aria-hidden="true">\u2192</span>';
+  }});
+  $('#cont').onclick=function(){if(!st.found)return;track('tap1_continue');lookPage()};
+  var gl=$('#goland');if(gl)gl.onclick=function(){landing()};
+  window.scrollTo(0,0);
+}
+var FOUND={
+ inherit:{t:'I inherited it',ic:'i-heart',add:{legacy:2,fear:2},msg:'Let\u2019s take this one gently.'},
+ bought:{t:'I bought it',ic:'i-box',add:{newp:1},msg:'New plant, new routine. We\u2019ll keep it simple.'},
+ gift:{t:'It was a gift',ic:'i-sprout',add:{gift:1},msg:'A gift plant deserves a calm start.'},
+ awhile:{t:'I\u2019ve had it a while',ic:'i-house',add:{},msg:'Good. You already know its spot.'}
+};
+function landingQF(){
+  var saved=store(true),w='';
+  if(saved&&saved.done&&saved.answers&&saved.answers.length){
+    var days=saved.ts?Math.floor((Date.now()-saved.ts)/86400000):0;
+    w='<div class="welcome"><p>Welcome back'+(saved.name?', '+esc(saved.name):'')+'. '+(days>=7?'It\u2019s been '+days+' days. How do the leaves look?':'Your plan is saved here.')+'</p><button class="btn ghost" id="resume" style="padding:10px 16px;font-size:16px">'+(days>=7?'Check in':'See my plan')+'</button></div>';
+  }
+  var tiles=['inherit','bought','gift','awhile'].map(function(k){var o=FOUND[k];return '<button class="opt" data-k="'+k+'"><span class="ic" aria-hidden="true">'+svgUse(o.ic,'0 0 32 32')+'</span><span>'+esc(o.t)+'</span></button>'}).join('');
+  app.innerHTML='<section class="qf"><div class="scene2 small" aria-hidden="true"><div class="rays"></div>'+svgUse('plant-monstera','0 0 240 260','sway')+'</div>'+
+   '<h1>Let\u2019s figure out what your plant needs</h1>'+
+   '<p class="lead">One quick question. No pressure.</p>'+w+
+   '<div class="tipnote"><b>One thing to know</b><span>Many houseplants like to dry out a little between waterings. Check first.</span></div>'+
+   '<p class="ask">How did this plant find you?</p><div class="opts tiles" role="radiogroup" aria-label="How did this plant find you?">'+tiles+'</div>'+
+   '<p class="pickmsg" id="pm" role="status"></p><p class="fineprint">Based on standard houseplant care guidance. Not a substitute for a local nursery.</p></section>'+
+   '<div class="stickybar"><div class="wrap"><button class="btn cta" id="cont" disabled>Choose one to continue</button><p class="trust">About 2 minutes. No sign-up.</p></div></div>';
+  app.querySelectorAll('.opt').forEach(function(b){b.onclick=function(){
+    var k=b.getAttribute('data-k');st.found=k;track('tap1_found',{k:k});
+    app.querySelectorAll('.opt').forEach(function(x){x.classList.toggle('picked',x===b);x.setAttribute('aria-checked',String(x===b))});
+    $('#pm').textContent=FOUND[k].msg;
+    var c=$('#cont');c.disabled=false;c.innerHTML='Continue <span aria-hidden="true">\u2192</span>';
+  }});
+  $('#cont').onclick=function(){if(!st.found)return;track('tap1_continue');lookPage()};
+  var rs=$('#resume');if(rs)rs.onclick=function(){var sv=store(true);st.name=sv.name||'';st.answers=sv.answers;track('return_visit');if(sv.ts&&Date.now()-sv.ts>=7*86400000)doctor();else result()};
+  window.scrollTo(0,0);
+}
+var OPEN={
+ droop:{ic:'i-droop',t:'Droopy',h:'Check the soil first.',b:'Drooping after a move is common. Push a finger 2 inches into the soil. Dry? Water slowly until it drains. Damp? Wait a day or two. Big plants in bright windows can dry out faster than you expect.',add:{sad:1,cx:'droop'}},
+ yellow:{ic:'i-fall',t:'Yellowing',h:'Check the soil first.',b:'One old yellow leaf is normal. Several at once often point to too much water. Push a finger 2 inches into the soil. Damp? Wait.',add:{sad:1,cx:'yellow'}},
+ fine:{ic:'i-heart',t:'Looks fine. I\u2019m just scared.',h:'Doing less is a real plan.',b:'This week, skip repotting and pruning. Push a finger 2 inches into the soil before you water. Then snap a photo of the whole plant. That\u2019s enough.',add:{fear:1}}
+};
+function fingerSVG(){
+  return '<svg class="finger" viewBox="0 -26 240 176" aria-hidden="true"><g class="fg"><rect x="104" y="-30" width="30" height="92" rx="15" fill="#F2C7A5" stroke="var(--edge)" stroke-width="3"/><path d="M112 -2 q7 -6 14 0" stroke="var(--edge)" stroke-width="2" fill="none" opacity=".4"/></g>'+
+   '<path d="M52 82h136l-10 50a8 8 0 0 1-8 6H70a8 8 0 0 1-8-6z" fill="var(--pot)" stroke="var(--edge)" stroke-width="3" stroke-linejoin="round"/>'+
+   '<rect x="42" y="66" width="156" height="18" rx="7" fill="var(--pot2)" stroke="var(--edge)" stroke-width="3"/>'+
+   '<ellipse cx="120" cy="67" rx="70" ry="5" fill="#6B4A36"/>'+
+   '<g class="rl"><path d="M212 67v34M207 67h10M207 101h10" stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round" fill="none"/><text x="222" y="89" font-size="15" font-weight="700" fill="var(--ink)">2 in</text></g></svg>';
+}
+function lookPage(){
+  st.view='open1b';st.picked=null;setProg(false);
+  document.body.classList.add('lp');$('#restart').hidden=true;track('view_s1b');
+  var saved=store(true),w='';
+  if(saved&&saved.done&&saved.answers&&saved.answers.length){
+    var days=saved.ts?Math.floor((Date.now()-saved.ts)/86400000):0;
+    w='<div class="welcome"><p>Welcome back'+(saved.name?', '+esc(saved.name):'')+'. '+(days>=7?'It\u2019s been '+days+' days. How do the leaves look?':'Your plan is saved here.')+'</p><button class="btn ghost" id="resume" style="padding:10px 16px;font-size:16px">'+(days>=7?'Check in':'See my plan')+'</button></div>';
+  }
+  var chips=['droop','yellow','fine'].map(function(k,i){var o=OPEN[k];return '<button class="chip3 rise" style="animation-delay:'+(1.1+i*.15)+'s" data-k="'+k+'"><span class="ic">'+svgUse(o.ic,'0 0 32 32')+'</span><span>'+esc(o.t)+'</span></button>'}).join('');
+  app.innerHTML='<section class="open"><div class="scene2" aria-hidden="true"><div class="rays"></div>'+svgUse('plant-monstera','0 0 240 260','sway')+'</div>'+
+   '<h1 class="rise" style="animation-delay:.15s">Big, old plants like it slow.</h1>'+
+   '<p class="lead rise" style="animation-delay:.55s">Take a breath. One quick look, then one thing to do tonight.</p>'+w+
+   '<p class="ask rise" style="animation-delay:.9s">How does your plant look right now?</p><div class="chips3">'+chips+'</div></section>'+
+   '<div class="stickybar"><div class="wrap"><button class="btn ghost cta" id="unsure">Not sure. Show me a tip <span aria-hidden="true">\u2192</span></button><p class="trust">No sign-up. Nothing to enter.</p></div></div>';
+  app.querySelectorAll('.chip3').forEach(function(b){b.onclick=function(){pickOpen(b.getAttribute('data-k'),b)}});
+  $('#unsure').onclick=function(){pickOpen('fine',null,true)};
+  var rs=$('#resume');if(rs)rs.onclick=function(){var sv=store(true);st.name=sv.name||'';st.answers=sv.answers;track('return_visit');if(sv.ts&&Date.now()-sv.ts>=7*86400000)doctor();else result()};
+  window.scrollTo(0,0);
+}
+function pickOpen(k,btn,unsure){
+  track('tap1_chip',{k:k,unsure:!!unsure});
+  if(btn){btn.classList.add('sel');app.querySelectorAll('.chip3').forEach(function(b){b.disabled=true})}
+  setTimeout(function(){tipScreen(k,unsure)},btn?380:0);
+}
+function tipScreen(k,unsure){
+  st.view='open2';var o=OPEN[k];st.pre=Object.assign({},(FOUND[st.found]||{}).add||{},unsure?{}:o.add);track('view_s2',{k:k});
+  setProg(false);document.body.classList.add('lp');
+  app.innerHTML='<section class="open tipsec"><div class="card tipcard rise"><span class="kicker">Tonight\u2019s one thing</span><h2 class="q">'+esc(unsure?'Check the soil first.':o.h)+'</h2>'+
+   '<div class="tipart">'+fingerSVG()+'</div><p class="tipbody">'+esc(o.b)+'</p>'+
+   '<button class="try" id="try" aria-pressed="false"><span class="tk" aria-hidden="true"></span>I\u2019ll try this tonight</button></div>'+
+   '<p class="fineprint">General tips. For a sick plant, a local nursery can look in person.</p>'+
+   '<p><button class="link" id="goback">\u2190 Back</button></p></section>'+
+   '<div class="stickybar"><div class="wrap"><button class="btn cta" id="more">What else should I know? <span aria-hidden="true">\u2192</span></button><p class="trust">A few easy questions. Skip any you like.</p></div></div>';
+  $('#try').onclick=function(){var on=this.getAttribute('aria-pressed')!=='true';this.setAttribute('aria-pressed',String(on));if(on){track('tap2_commit');toast('Good. One small thing tonight.')}};
+  $('#more').onclick=function(){track('tap2_more');question()};
+  $('#goback').onclick=function(){lookPage()};
+  window.scrollTo(0,0);
+}
+function intro(){landing()}
+
+/* ---------- QUESTION ---------- */
+function question(){
+  st.view='q';st.picked=null;
+  var S=derive(st.answers),q=nextQ(S,st.answers);
+  if(!q)return gate();
+  if(st.answers.length===3&&!st.i1)return infoPage(S);
+  if(st.answers.length===6&&!st.i2)return communityPage(S);
+  var first=st.answers.length===0,tot=totalQ(S,st.answers),n=st.answers.length+1;
+  setProg(true,(st.answers.length/tot)*100,'Question '+n+' of '+tot,q.kind==='tf'?'Myth buster':'');
+  var h='';
+  h+='<div class="card stack" style="margin-top:14px;gap:0"><div><span class="kicker'+(q.kind==='tf'?' tf':'')+'">'+esc(first?'Start here':q.label)+'</span></div>'+
+    '<h2 class="q">'+esc(q.q)+'</h2>'+(q.sub?'<p class="sub">'+esc(q.sub)+'</p>':'');
+  if(q.kind==='tf'){
+    h+='<div class="opts tfrow"><button class="opt" data-i="0"><span>True</span></button><button class="opt" data-i="1"><span>False</span></button></div>';
+  }else{
+    h+='<div class="opts'+(q.id==='plant'?' plants':q.id==='why'?' tiles':'')+'">'+q.opts.map(function(o,i){return optHTML(q,o,i)}).join('')+'</div>';
+  }
+  h+='<div id="rep"></div></div>';
+  h+='<p style="margin-top:14px"><button class="link" id="goback">← Back'+(st.answers.length?' one question':'')+'</button></p>';
+  app.innerHTML=h;
+  app.querySelectorAll('.opt').forEach(function(b){b.onclick=function(){pick(q,+b.getAttribute('data-i'))}});
+  var gb=$('#goback');if(gb)gb.onclick=function(){if(st.answers.length){st.answers.pop();question()}else if(st.pre){tipScreen(st.pre.cx==='droop'?'droop':st.pre.cx==='yellow'?'yellow':'fine',!st.pre.fear&&!st.pre.cx)}else landing()};
+  var rs=$('#resume');if(rs)rs.onclick=function(){var sv=store(true);st.name=sv.name||'';st.answers=sv.answers;track('return_visit');if(sv.ts&&Date.now()-sv.ts>=7*86400000)doctor();else result()};
+  toTop();
+}
+
+/* ---------- HALFWAY INSIGHT ---------- */
+var INFO={
+ monstera:['Monsteras are climbers.','In the wild they climb trees. Long vines and reaching roots are how they grow.'],
+ pothos:['Pothos are climbers too.','Trailing vines are normal. A cutting in water makes a new plant.'],
+ fiddle:['Fiddles like a steady spot.','They don\u2019t love change. Pick one place and leave it.'],
+ snake:['Snake plants store water.','Their thick leaves hold it, so they like to dry out between drinks.'],
+ other:['Most houseplants come from warm forests.','They like bright light without harsh sun, and soil that dries a little between drinks.']
+};
+function breakPage(label,pct,html,btn,onGo){
+  setProg(true,pct,label,'');
+  app.innerHTML='<div class="card" style="margin-top:14px;text-align:center">'+html+'</div>'+
+   '<div class="stickybar"><div class="wrap"><button class="btn cta" id="go">'+btn+' <span aria-hidden="true">\u2192</span></button></div></div>';
+  $('#go').onclick=onGo;toTop();
+}
+function infoPage(S){
+  st.view='info';track('info_view');var tot=totalQ(S,st.answers),d=INFO[S.plant||'other'];
+  breakPage('Quick break',(3/tot)*100,'<div class="fig" style="margin-bottom:16px">'+svgUse(PSYM[S.plant||'other'],'0 0 240 260')+'</div><span class="kicker">Did you know?</span><h2 class="q">'+esc(d[0])+'</h2><p class="sub">'+esc(d[1])+'</p>','Continue',function(){st.i1=true;question()});
+}
+function communityPage(S){
+  st.view='community';track('community_view');var tot=totalQ(S,st.answers);
+  var row=['monstera','pothos','fiddle','snake','other'].map(function(k){return svgUse(PSYM[k],'0 0 240 260')}).join('');
+  breakPage('Quick break',(6/tot)*100,'<div class="fig crowd" style="margin-bottom:16px">'+row+'</div><span class="kicker">You\u2019re not alone</span><h2 class="q">Plenty of people care for a plant they didn\u2019t plan on.</h2><p class="sub">Calm tips and check-ins come by email. No spam.</p>','Continue',function(){st.i2=true;question()});
+}
+
+/* ---------- NAME GATE (last step before the plan) ---------- */
+function gate(){
+  st.view='gate';var S=derive(st.answers);
+  track('gate_view');setProg(true,100,'Your plan is ready','Last step');
+  app.innerHTML='<div class="card gate" style="margin-top:14px"><div class="fig">'+svgUse(PSYM[S.plant||'other'],'0 0 240 260')+'</div>'+
+   '<span class="kicker">Plan ready</span><h2 class="q">Who is this plan for?</h2>'+
+   '<p class="sub">Add your name to save it on this device.</p>'+
+   '<ul><li>'+svgUse('i-check','0 0 32 32')+'This week’s steps</li><li>'+svgUse('i-check','0 0 32 32')+'What to leave alone</li><li>'+svgUse('i-check','0 0 32 32')+'Warning signs</li></ul>'+
+   '<div class="field" style="margin-top:18px"><label for="nm">First name</label><input id="nm" type="text" maxlength="24" placeholder="Optional" autocomplete="given-name" value="'+esc(st.name)+'"></div>'+
+   '<div class="row" style="margin-top:16px"><button class="btn full" id="go">Show my plan</button></div>'+
+   '<p style="margin-top:12px;text-align:center"><button class="link" id="skip">Skip, show my plan</button></p></div>'+
+   '<p style="margin-top:14px"><button class="link" id="goback">← Back one question</button></p>';
+  var go=function(skip){st.name=skip?'':$('#nm').value.trim();save(true,true);track('gate_submit',{skip:!!skip,name:!!st.name});result()};
+  $('#go').onclick=function(){go(false)};$('#skip').onclick=function(){go(true)};
+  $('#nm').onkeydown=function(e){if(e.key==='Enter')go(false)};
+  $('#goback').onclick=function(){st.answers.pop();question()};
+  toTop();
+}
+
+function pick(q,i){
+  if(st.picked!==null)return;st.picked=i;
+  var btns=app.querySelectorAll('.opt'),k,title,text,quick=false;burst(btns[i]);
+  btns.forEach(function(b){b.disabled=true});
+  if(q.kind==='tf'){
+    var good=(i===0)===q.answer;
+    btns[i].classList.add(good?'right':'wrong');if(!good)btns[q.answer?0:1].classList.add('right');
+    k=good?'ok':'no';title=good?'You got it.':'Common mix-up.';text=good?q.ex.ok:q.ex.wrong;quick=!!q.quick;
+  }else{
+    var o=q.opts[i];btns[i].classList.add('picked');
+    k=o.k||'hug';title=o.h||'';text=o.r;quick=!text;
+  }
+  st.answers.push({id:q.id,i:i});
+  track('q_answered',{id:q.id,i:i,n:st.answers.length});
+  var gb0=$('#goback');if(gb0)gb0.parentNode.remove();
+  if(quick){
+    if(q.kind==='tf')$('#rep').innerHTML='<p class="tiny '+k+'" role="status">'+esc(title)+'</p>';
+    setTimeout(question,q.kind==='tf'?950:300);
+    return;
+  }
+  btns.forEach(function(b,j){if(j!==i)b.classList.add('gone')});
+  var last=!nextQ(derive(st.answers),st.answers);
+  $('#rep').innerHTML='<div class="reply '+k+'" role="status"><div class="rl">'+svgUse('leafg','0 0 100 100','').replace('<use href="#leafg"/>','<use href="#leafg" style="color:var(--g2)"/>')+'<div><div class="tag">'+esc(title)+'</div><p>'+esc(text)+'</p></div></div></div>';
+  var bar=document.createElement('div');bar.className='stickybar';
+  bar.innerHTML='<div class="wrap"><button class="btn full" id="nx">'+(last?'Show my plan':'Next')+' \u2192</button></div>';
+  app.appendChild(bar);
+  $('#nx').onclick=question;
+  setTimeout(function(){var r=$('#rep');if(r&&r.scrollIntoView)r.scrollIntoView({block:'center',behavior:'smooth'});$('#nx').focus({preventScroll:true})},60);
+}
+
+/* ---------- RESULT ---------- */
+function typeOf(S){
+  var t=S.t;
+  var T=[
+   {n:'The Legacy Keeper',s:(t.legacy||0)*1.2,d:'You’re keeping a story alive. That kind of care helps a plant most.'},
+   {n:'The Devoted Waterer',s:(t.over||0)*1.5+(t.drain||0),d:'You show up with love and water. Your plant wants a little more space.'},
+   {n:'The Steady Hand',s:(t.waterpro||0)*2+(t.fear||0)*.4,d:'You look before you act. Trust your own checks.'},
+   {n:'The Instinct Grower',s:(t.wing||0)+(t.under||0)+(t.grow||0)*.5,d:'You’re relaxed, and your plants feel it. Two simple habits make it reliable.'}
+  ],best=T[2];
+  T.forEach(function(x){if(x.s>best.s)best=x});
+  return best;
+}
+function echoes(S){
+  var t=S.t,o=[];
+  if(t.legacy)o.push('This plant has a story, so every step is gentle.');
+  if(t.leggy||t.keepasis)o.push('You like the vine look, so no chopping needed.');
+  if(t.moved)o.push('It just moved in, so we start by doing less.');
+  if((t.light||0)<=1)o.push('Your light is dim, so light comes first.');
+  if(t.over||t.drain)o.push('Watering needs a tweak, so we kept it simple.');
+  if(t.under)o.push('Watering slips your mind, so you get a weekly check.');
+  if(t.pets)o.push('Pets or kids around, so you get a safe-spot tip.');
+  if(!o.length)o.push('You’re already doing a lot right. Just small tweaks ahead.');
+  return o.slice(0,3);
+}
+
+function plan(S){
+  var t=S.t,p=S.plant,mon=p==='monstera',P={week:[],leave:[],soon:[],watch:[]};
+  var add=function(sec,h,d){P[sec].push({h:h,d:d})};
+
+  add('week','Check the soil first','Finger 2 inches deep (right for most houseplants). Dry? Water till it drains, then empty the saucer.');
+  if((t.light||0)<=1)add('week','Move it near your brightest window','Even a few feet helps. Plants stretch when they reach for light.');
+  if(t.light===3)add('week','Shade it from hot afternoon sun','Morning sun is fine. Pale or crispy spots mean pull back or add a curtain.');
+  if(t.light===2)add('week','Keep the light steady','This light works. Moving it around stresses plants more.');
+  if(t.drain)add('week','Fix the drainage','Use a plastic pot with holes inside the pretty one. Empty extra water.');
+  if(t.over)add('week','Water less often','Skip the calendar. Water only when the top 2 inches are dry.');
+  if(t.gift||t.newp)add('week','Settle your new plant','Move it to bright light, take off any plastic sleeve, and check the drain holes.');
+  if(t.pets)add('week','Pick a safe spot','Keep leaves out of reach of pets and small kids.');
+  if(mon&&t.nosupport)add('week','Prop up the heavy vines','Loosely tie stems to a stake, trellis, or wall hooks.');
+  if(t.under)add('week','Set a weekly check reminder','Check the soil for ten seconds. Water only if it’s dry.');
+  add('week','Take a photo today','You’ll love a before picture in three months.');
+
+  add('leave','Fertilizer',t.moved?'Wait a month after a move. Stressed roots don’t need a push.':'Skip it for now. Fresh soil after repotting has plenty.');
+  if(S.mistakes.indexOf('myth3')>-1||t.moved)add('leave','Repotting or pruning, for now','Give it 2 to 4 weeks to settle, unless roots look bad. Spring is the best time to repot.');
+  if(mon&&(t.season==='rest'||t.season==='slow'))add('leave','A full repot, until spring','Refresh the top 2 to 3 inches of soil now. Repot March to June.');
+  if(S.mistakes.indexOf('myth2')>-1||t.oldpot)add('leave','A giant new pot','Go up one size. Extra soil stays wet and can rot roots.');
+  if(mon)add('leave','Cutting the main stem','You don’t need to prune. Leave the thick main stem and roots alone.');
+
+  if(mon){
+    add('soon','Repot day, done gently','Repot only if roots clearly need it. Use a heavy pot about 2 inches wider, with holes, plus a sturdy stake. Steps are below.');
+    if(t.leggy||t.keepasis)add('soon','Keep the vine look','Tie long stems to a trellis or hooks. Vines are a real look.');
+    add('soon','How much can I cut?','Cut just above a stem bump. Take under a third. Wear gloves.');
+    add('soon','Tuck or tie new roots','Guide them into the soil or onto the support. Don’t cut them.');
+    add('soon','Make a backup plant','Root a small cutting in water. It’s insurance for a plant you can’t replace.');
+    if(t.grow)add('soon','Add light first','New leaves grow toward light. More light means fuller growth.');
+  }else if(p==='pothos'){
+    if(t.leggy)add('soon','Trim and replant for fullness','Snip below a stem bump, root in water, tuck back into the pot.');
+    add('soon','Grow a free second plant','A cutting in water roots in a couple of weeks.');
+  }else if(p==='fiddle'){
+    add('soon','Pick one spot and stay','Bright, no drafts. Turn it a quarter turn each month.');
+  }else if(p==='snake'){
+    add('soon','Water less than you think','Every 2 to 4 weeks, only when fully dry. Even less in winter.');
+  }else{
+    add('soon','Change one thing','Pick light or watering. Wait two weeks and see.');
+  }
+
+  add('watch','Lots of yellow leaves','One old leaf is normal. Many at once often point to water or light.');
+  add('watch','Mushy stems or sour soil smell','That’s a rot warning. Stop watering and check the roots.');
+  if(mon||p==='pothos'||p==='fiddle')add('watch','Brown, crispy patches','That’s sunburn. Move it back or filter the light.');
+  add('watch','Tiny webs, black flies, white fuzz','Those are pests. Catch them early and they’re easy to fix.');
+  return P;
+}
+
+var PHASES=[['leave','Leave alone for now','Hands off'],['soon','In 2 to 4 weeks','Coming up'],['watch','Keep an eye out for','Warning signs']];
+
+function weekLi(it,id,done){
+  var on=!!done[id];
+  return '<li class="'+(on?'done':'')+'"><button class="chk" role="checkbox" aria-checked="'+on+'" aria-label="Mark done: '+esc(it.h)+'" data-c="'+id+'"></button><div class="txt"><b>'+esc(it.h)+'</b><span class="d">'+esc(it.d)+'</span></div></li>';
+}
+
+function result(){
+  st.view='result';setProg(false);$('#restart').hidden=false;
+  var S=derive(st.answers),T=typeOf(S),P=plan(S);
+  var sv=store(true)||{};var done=sv.checks||{};
+  var legacy=T.n==='The Legacy Keeper';
+  track('result_view',{type:T.n,plant:S.plant});
+  var h=(isGame()?'<div class="lvlc"><span>Level complete!</span><div class="stars" aria-hidden="true">\u2605 \u2605 \u2605</div></div>':'')+'<div class="card res" style="margin-top:14px"><div class="fig">'+svgUse(PSYM[S.plant||'other'],'0 0 240 260')+'</div>'+
+   '<span class="badge"><svg width="18" height="18" aria-hidden="true"><use href="#leaf"/></svg>Your plant-parent type</span>'+
+   '<h1>'+(st.name?esc(st.name)+', you are<br>':'You are<br>')+'<span>'+esc(T.n)+'</span>'+(S.plant?'<small style="display:block;font-size:.5em;margin-top:8px">of a '+esc(PLANTS[S.plant])+'</small>':'')+'</h1>'+
+   '<p class="tagline">'+esc(T.d)+'</p>'+
+   (S.tf?'<p class="meterlab" style="margin-top:14px">You spotted '+S.ok+' of '+S.tf+' plant myths.</p>':'')+
+   '</div>';
+
+  h+='<div class="card sec" style="margin-top:18px"><span class="when">Built from what you told us</span><h2>Why this plan fits you</h2><ul class="items">'+
+   echoes(S).map(function(x){return '<li><span class="mark" aria-hidden="true">✓</span><div class="txt"><span class="d" style="color:var(--ink)">'+esc(x)+'</span></div></li>'}).join('')+'</ul></div>';
+
+  var wk=P.week;
+  h+='<div class="card sec" style="margin-top:18px"><span class="when">Your first step</span><h2>Start with one small thing</h2>'+
+   '<p class="sub" style="color:var(--ink)">Pick a time so it happens. Example: Saturday, after coffee, I’ll check the soil.</p>'+
+   '<ul class="items">'+weekLi(wk[0],'week0',done)+'</ul>'+
+   '<h3 style="font-size:19px;margin-top:22px">Then, this week</h3><ul class="items">'+wk.slice(1,4).map(function(it,i){return weekLi(it,'week'+(i+1),done)}).join('')+'</ul>'+
+   (wk.length>4?'<div style="margin-top:14px"><details><summary>More for this week ('+(wk.length-4)+')</summary><ul class="items" style="margin:0 0 14px">'+wk.slice(4).map(function(it,i){return weekLi(it,'week'+(i+4),done)}).join('')+'</ul></details></div>':'')+
+   '</div>';
+
+  if(S.plant==='monstera'&&(S.t.oldpot||S.t.legacy)){
+    h+='<div class="card legacy" style="margin-top:18px"><div class="sec"><span class="when">For a plant with a story</span><h2>Your plan in one breath</h2>'+
+     '<ul class="items">'+
+     '<li><span class="mark">1</span><div class="txt"><b>Fix light and water first.</b><span class="d">Change nothing big. If it just moved, give it 2 to 4 weeks.</span></div></li>'+
+     '<li><span class="mark">2</span><div class="txt"><b>Repot in spring.</b><span class="d">One size up, with real support for the vines.</span></div></li>'+
+     '<li><span class="mark">3</span><div class="txt"><b>Make a backup.</b><span class="d">Rooted cuttings mean one mistake can’t lose it.</span></div></li>'+
+     '</ul></div></div>';
+  }
+
+  h+='<div class="card" style="margin-top:18px"><span class="badge">'+(legacy?'You’re that person':'Nice work')+'</span><h2 style="font-size:26px;margin-top:10px">'+(legacy?'You keep a family plant going.':'Plants do well with people who pay attention.')+'</h2>'+
+   '<p class="sub">'+(legacy?'Send this to the cousin who keeps asking if it’s alive.':'Send this to a plant-loving friend.')+'</p>'+
+   '<div class="row" style="margin-top:16px"><button class="btn pop" id="share">Share my result</button></div></div>';
+
+  PHASES.forEach(function(ph){
+    var items=P[ph[0]];if(!items.length)return;
+    h+='<div class="card sec" style="margin-top:18px"><span class="when">'+ph[2]+'</span><h2>'+ph[1]+'</h2><ul class="items">';
+    items.forEach(function(it){
+      var m=ph[0]==='leave'?'<span class="mark no" aria-hidden="true">×</span>':ph[0]==='watch'?'<span class="mark eye" aria-hidden="true">!</span>':'<span class="mark" aria-hidden="true">→</span>';
+      h+='<li>'+m+'<div class="txt"><b>'+esc(it.h)+'</b><span class="d">'+esc(it.d)+'</span></div></li>';
+    });
+    h+='</ul></div>';
+  });
+
+  if(S.plant==='monstera'){
+    h+='<div class="card sec" style="margin-top:18px"><span class="when">Monstera repotting day</span><h2>Step by step</h2><div style="margin-top:14px">'+
+     '<details><summary>What you will need</summary><ol><li>A heavy pot (ceramic or terracotta) about 2 inches wider (up to 4 for a huge root ball), with drainage holes.</li><li>Chunky mix: about equal parts potting soil, orchid bark, and perlite or pumice.</li><li>A sturdy stake, trellis, or hooks, plus soft plant ties.</li><li>A tarp, gloves, and a helper if the plant is big.</li></ol></details>'+
+     '<details><summary>The repotting steps</summary><ol><li>Water lightly the day before so roots are not bone dry.</li><li>Lay the plant on its side and ease it out. Do not pull on the stems.</li><li>Loosen circling roots with your fingers. Trim only mushy or dead roots, never the main ones.</li><li>Add mix to the new pot, set the plant at the same depth as before, and fill in around it.</li><li>Install the support and tie stems loosely at the nodes.</li><li>Water thoroughly until it drains, then put it back in its spot.</li></ol></details>'+
+     '<details><summary>Aftercare for the first month</summary><ol><li>Keep the light and spot the same.</li><li>Water only when the top 2 inches are dry.</li><li>Skip fertilizer for about 4 to 6 weeks.</li><li>A few drooping or yellow leaves in the first weeks are common. Keep calm and stay steady.</li></ol></details>'+
+     '</div><p class="fine">General guidance for healthy plants. If the roots look mushy or the pot is cracking, a local nursery can look at it in person.</p></div>';
+  }
+
+  h+='<div class="card doc" style="margin-top:18px"><span class="badge">Need help?</span><h2 style="font-size:28px;margin-top:10px">Something looking off?</h2>'+
+     '<p class="sub" style="color:var(--ink)">Pick a symptom. Get a quick fix. General tips, no guarantees.</p>'+
+     '<div class="row" style="margin-top:16px"><button class="btn" id="gotoDoc">Ask Plant Doctor</button></div></div>';
+  h+='<p style="margin-top:18px;text-align:center"><button class="link" id="again">Retake for another plant</button></p>';
+  app.innerHTML=h;
+  var sb=document.createElement('div');sb.className='stickybar';sb.innerHTML='<div class="wrap"><button class="btn cta" id="savep">Save my plan <span aria-hidden="true">\u2192</span></button><p class="trust">Takes 10 seconds. Just your email.</p></div>';app.appendChild(sb);
+  $('#savep').onclick=function(){track('save_click');emailPage()};
+  $('#gotoDoc').onclick=function(){track('doctor_open',{source:'result'});doctor(S.t.cx)};
+  $('#again').onclick=function(){track('retake_click');intro()};
+  $('#share').onclick=function(){
+    track('share_click');
+    var txt=(st.name?st.name+' is ':'I am ')+T.n+(S.plant?' of a '+PLANTS[S.plant]:'')+' on Green Thumb Check-In. Which plant parent are you?';
+    if(navigator.share){navigator.share({title:'Green Thumb Check-In',text:txt,url:location.href}).catch(function(){});return}
+    try{navigator.clipboard.writeText(txt).then(function(){toast('Copied. Send it to a plant friend.')},function(){fallbackCopy(txt)})}catch(e){fallbackCopy(txt)}
+  };
+  app.querySelectorAll('.chk').forEach(function(b){b.onclick=function(){
+    var c=b.getAttribute('data-c'),s=store(true)||{name:st.name,answers:st.answers,done:true};
+    s.checks=s.checks||{};s.checks[c]=!s.checks[c];store(false,s);track('check_toggle',{id:c});
+    b.setAttribute('aria-checked',String(!!s.checks[c]));b.parentNode.classList.toggle('done',!!s.checks[c]);
+    if(s.checks[c])toast('Nice. One step done.');
+  }});
+  toTop();
+}
+function fallbackCopy(txt){
+  var ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();
+  var ok=false;try{ok=document.execCommand('copy')}catch(e){}
+  document.body.removeChild(ta);toast(ok?'Copied. Send it to a plant friend.':'Select and copy: '+txt.slice(0,40)+'…');
+}
+
+/* ---------- EMAIL (end of funnel) ---------- */
+function saveEmail(email){
+  var S=derive(st.answers),T=typeOf(S),rec={email:email,name:st.name||'',plant:S.plant||'',type:T.n,ts:Date.now(),consent:true};
+  try{localStorage.setItem('gtc:email',email)}catch(e){}
+  if(!(window.claude&&window.claude.use))return Promise.resolve('local');
+  return Promise.all([window.claude.use('db'),window.claude.use('user')]).then(function(a){
+    var db=a[0],user=a[1];if(!db||!user)return 'local';
+    return user.id().then(function(id){if(!id)return 'local';return db.doc('signups/'+id).set(rec).then(function(){return 'ok'})});
+  }).catch(function(){return 'fail'});
+}
+function emailPage(){
+  st.view='email';setProg(false);$('#restart').hidden=false;
+  var S=derive(st.answers),pk=PSYM[S.plant||'other'];
+  app.innerHTML='<div class="card gate" style="margin-top:14px"><div class="fig">'+svgUse(pk,'0 0 240 260')+'</div>'+
+   '<span class="kicker">Last step</span><h2 class="q">Where should we send your plan?</h2>'+
+   '<p class="sub">You\u2019ll get your plan, plus a gentle check-in on day 7.</p>'+
+   '<form id="ef" novalidate><div class="field" style="margin-top:16px"><label for="em">Email</label><input id="em" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required></div>'+
+   '<p class="err" id="er" role="alert" hidden>Please enter a valid email.</p>'+
+   '<p class="fineprint" style="text-align:left;margin-top:10px">We only use it for your plan and plant tips. No spam.</p></form>'+
+   '<p style="margin-top:12px;text-align:center"><button class="link" id="nothx">No thanks, keep it on this device</button></p></div>'+
+   '<div class="stickybar"><div class="wrap"><button class="btn cta" id="send">Send my plan <span aria-hidden="true">\u2192</span></button><p class="trust">Takes 10 seconds.</p></div></div>';
+  track('email_view');
+  var go=function(){
+    var v=$('#em').value.trim();
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(v)){$('#er').hidden=false;$('#em').focus();return}
+    $('#er').hidden=true;$('#send').disabled=true;$('#send').textContent='Sending\u2026';
+    saveEmail(v).then(function(res){track('email_submit',{res:res});thanksPage(res)});
+  };
+  $('#send').onclick=go;$('#ef').onsubmit=function(e){e.preventDefault();go()};
+  $('#nothx').onclick=function(){track('email_skip');thanksPage('skip')};
+  toTop();
+}
+function thanksPage(res){
+  st.view='thanks';setProg(false);$('#restart').hidden=false;
+  var S=derive(st.answers),T=typeOf(S);
+  var ok=res==='ok',msg=ok?'We\u2019ll send your plan and a check-in on day 7.':res==='fail'?'We couldn\u2019t save your email just now. Your plan is still saved on this device.':'Your plan is saved on this device.';
+  app.innerHTML='<div class="card" style="margin-top:14px;text-align:center"><div class="fig" style="margin-bottom:16px">'+svgUse(PSYM[S.plant||'other'],'0 0 240 260')+'</div>'+
+   '<span class="kicker">'+(ok?'You\u2019re in':'All set')+'</span><h2 class="q">'+(ok?'Thanks'+(st.name?', '+esc(st.name):'')+'.':'Your plan is ready.')+'</h2><p class="sub">'+esc(msg)+'</p>'+
+   '<div class="row" style="margin-top:20px;justify-content:center"><button class="btn" id="seep">See my plan again</button><button class="btn ghost" id="shr">Share with a friend</button></div></div>';
+  $('#seep').onclick=result;
+  $('#shr').onclick=function(){var txt='I\u2019m '+T.n+' on Green Thumb Check-In. Which plant parent are you?';if(navigator.share){navigator.share({title:'Green Thumb Check-In',text:txt,url:location.href}).catch(function(){});return}try{navigator.clipboard.writeText(txt).then(function(){toast('Copied. Send it to a plant friend.')},function(){fallbackCopy(txt)})}catch(e){fallbackCopy(txt)}};
+  toTop();
+}
+
+/* ---------- PLANT DOCTOR ---------- */
+var SYM={
+ yellow:{n:'Yellow leaves',q:'Where are the yellow leaves?',o:[
+  {t:'Just the oldest, lowest leaves, one at a time',d:'Probably normal aging',b:'Plants shed old leaves as they grow new ones. If it is one leaf every so often and the rest looks healthy, this is normal.',s:['Snip the yellow leaf off at the base.','Keep watering and light steady.','Only worry if several leaves go yellow at once.']},
+  {t:'Several at once, and the soil is still wet',d:'Likely overwatering',b:'Roots sitting in wet soil cannot breathe, and yellow leaves are the first signal.',s:['Stop watering until the top 2 to 3 inches are dry.','Check the pot has drainage and empty the saucer.','If the soil smells sour or the stems feel mushy, check the roots for rot.']},
+  {t:'Yellowing, and the soil is bone dry for days',d:'Likely underwatering',b:'The plant is dropping leaves to save water.',s:['Water slowly until it drains from the bottom.','If water runs straight through, soak the pot in a sink for 20 minutes.','Check the soil every few days from now on.']},
+  {t:'New growth looks pale yellow-green',d:'Likely low light or low nutrients',b:'Plants make pale leaves when they are short on light or food.',s:['Move it closer to a bright window.','Once settled, feed with diluted fertilizer during spring and summer.','Give it a few weeks to respond.']}]},
+ brown:{n:'Brown crispy edges',q:'Which sounds closest?',o:[
+  {t:'Crispy tips, and the soil dries out completely between waterings',d:'Inconsistent watering or dry air',b:'Swings between very dry and soaking can crisp the edges.',s:['Water more evenly: check often, water when the top inch or two is dry.','Group plants together or add a humidifier if the air is very dry.','Trim brown edges with clean scissors if you like. They will not turn green again.']},
+  {t:'Brown patches only on the side facing the sun',d:'Sunburn',b:'Direct hot sun scorches leaves.',s:['Move it back from the glass or add a sheer curtain.','Trim badly burned leaves.','Keep morning sun, avoid harsh afternoon sun.']},
+  {t:'Dark, soft, mushy spots',d:'Too much water or a fungal spot',b:'Wet soil and poor airflow can cause soft spots.',s:['Cut off the damaged leaf.','Let the soil dry out more between waterings.','Give the plant more airflow and avoid wetting the leaves.']}]},
+ droop:{n:'Drooping',q:'What is the soil like right now?',o:[
+  {t:'Dry, even a few inches down',d:'It is thirsty',b:'This is the easy one.',s:['Water slowly until it drains.','Expect it to perk up within a day or two.','Check soil more often next week.']},
+  {t:'Wet or soggy',d:'Roots may be struggling',b:'Droopy plus wet soil can mean the roots are suffocating or rotting.',s:['Stop watering and move to a bright spot to dry out.','Tip it out of the pot and look at the roots. Healthy roots are firm and pale.','Cut away mushy roots and repot in fresh, chunky mix if needed.']},
+  {t:'It just moved, and the soil is fine',d:'Transplant shock',b:'Plants often droop for a week or two after a change.',s:['Keep light and watering steady.','Do not repot, prune, or fertilize yet.','Give it two to three weeks.']}]},
+ leggy:{n:'Long, stretched, sparse',q:'How bright is its spot?',o:[
+  {t:'Dim or far from windows',d:'It is reaching for light',b:'Stretching with big gaps between leaves is a classic low-light sign.',s:['Move it closer to your brightest window.','Rotate it a quarter turn each month.','New growth will be more compact. Old stretched stems will not shrink.']},
+  {t:'Bright already',d:'Natural vining habit',b:'Some plants simply grow long. That can be a look you love.',s:['Support the vines on a trellis or hooks.','Or trim above a node to encourage branching and root the cuttings.','Keep light steady.']}]},
+ mush:{n:'Mushy or black stems',q:'Where is the damage?',o:[
+  {t:'At the base of the stem near the soil',d:'Stem or root rot',b:'This is urgent but sometimes rescuable.',s:['Cut above the rot into healthy, firm tissue.','Root any healthy stem pieces with a node in water.','Discard rotted soil and disinfect the pot before reusing.']},
+  {t:'Only on a few leaf tips',d:'Minor, probably watering or cold',b:'Not a rot problem yet.',s:['Trim damaged leaves.','Check for cold drafts or touching a cold window.','Water only when the top couple of inches are dry.']}]},
+ bugs:{n:'Pests or sticky spots',q:'What do you see?',o:[
+  {t:'Tiny webs and speckled leaves',d:'Likely spider mites',b:'They love dry, warm air.',s:['Rinse the whole plant in the shower.','Wipe leaves, tops and undersides.','Treat weekly with insecticidal soap or neem for 3 to 4 weeks.']},
+  {t:'Tiny black flies around the soil',d:'Likely fungus gnats',b:'They breed in constantly damp soil.',s:['Let the soil dry out more between waterings.','Use yellow sticky traps.','Top the soil with a thin layer of dry sand or fine gravel.']},
+  {t:'White cottony fuzz or sticky residue',d:'Likely mealybugs or scale',b:'They hide in leaf joints and under leaves.',s:['Dab with a cotton swab dipped in rubbing alcohol.','Isolate the plant from others.','Check every few days and repeat until gone.']}]}
+};
+function doctor(pref){
+  st.view='doc';setProg(false);$('#restart').hidden=false;
+  var keys=Object.keys(SYM);
+  var h='<div class="card" style="margin-top:14px"><span class="kicker">Plant Doctor</span><h2 class="q">What’s your plant telling you?</h2><p class="sub">Pick the symptom that bugs you most.</p><div class="sym">'+
+    keys.map(function(k){return '<button class="opt" data-k="'+k+'"'+(k===pref?' style="background:var(--sun);color:var(--on-sun)"':'')+'><span>'+esc(SYM[k].n)+'</span></button>'}).join('')+'</div></div>'+
+    '<p style="margin-top:16px"><button class="link" id="bp">← Back to my plan</button></p>';
+  app.innerHTML=h;
+  app.querySelectorAll('.sym .opt').forEach(function(b){b.onclick=function(){docQ(b.getAttribute('data-k'))}});
+  $('#bp').onclick=result;toTop();
+}
+function docQ(k){
+  var s=SYM[k];
+  var h='<div class="card" style="margin-top:14px"><span class="kicker">'+esc(s.n)+'</span><h2 class="q">'+esc(s.q)+'</h2><div class="opts">'+
+   s.o.map(function(o,i){return '<button class="opt" data-i="'+i+'"><span class="dot"></span><span>'+esc(o.t)+'</span></button>'}).join('')+'</div></div>'+
+   '<p style="margin-top:16px"><button class="link" id="bd">← Pick another symptom</button></p>';
+  app.innerHTML=h;
+  app.querySelectorAll('.opt').forEach(function(b){b.onclick=function(){docDx(k,+b.getAttribute('data-i'))}});
+  $('#bd').onclick=function(){doctor()};toTop();
+}
+function docDx(k,i){
+  var o=SYM[k].o[i];
+  var h='<div class="card dx" style="margin-top:14px"><span class="badge">Most likely</span><h3>'+esc(o.d)+'</h3><p class="sub" style="color:var(--ink)">'+esc(o.b)+'</p>'+
+   '<h2 style="font-size:20px;margin-top:20px">What to do</h2><ul class="items">'+o.s.map(function(x,n){return '<li><span class="mark">'+(n+1)+'</span><div class="txt"><span class="d" style="color:var(--ink)">'+esc(x)+'</span></div></li>'}).join('')+'</ul>'+
+   '<p class="fine" style="margin-top:16px">If it does not improve in two weeks, or spreads fast, a local nursery can take a look in person.</p>'+
+   '<div class="row" style="margin-top:18px"><button class="btn" id="an">Check another symptom</button><button class="btn ghost" id="bp2">Back to my plan</button></div></div>';
+  app.innerHTML=h;
+  $('#an').onclick=function(){doctor()};$('#bp2').onclick=result;toTop();
+}
+
+$('#restart').onclick=function(){var b=$('#restart');if(st.answers.length&&b.dataset.arm!=='1'){b.dataset.arm='1';b.textContent='Tap again to restart';setTimeout(function(){b.dataset.arm='';b.textContent='Restart'},3000);return}b.dataset.arm='';b.textContent='Restart';track('restart');intro()};
+function isGame(){return document.documentElement.getAttribute('data-style')==='g'}
+function burst(el){
+  if(!isGame()||!el||(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches))return;
+  var r0=el.getBoundingClientRect(),cx=r0.left+r0.width/2,cy=r0.top+r0.height/2,cols=['#FFD23F','#FF6B6B','#3BC45B','#4FB3FF','#B07CFF','#FF9B3D'];
+  for(var i=0;i<16;i++){var c=document.createElement('i');c.className='cf';var a=Math.random()*Math.PI*2,d=50+Math.random()*80;
+    c.style.cssText='left:'+cx+'px;top:'+cy+'px;background:'+cols[i%cols.length]+';--dx:'+(Math.cos(a)*d).toFixed(0)+'px;--dy:'+(Math.sin(a)*d-30).toFixed(0)+'px;--r:'+((Math.random()*540-270)|0)+'deg';
+    document.body.appendChild(c);(function(x){setTimeout(function(){x.remove()},950)})(c)}
+}
+function decorate(){
+  if(!isGame()||app.querySelector('.mascotrow'))return;
+  if(['q','found','open1','open1b','open2','info','community','gate','email','loader'].indexOf(st.view)<0)return;
+  app.insertAdjacentHTML('afterbegin','<div class="mascotrow" aria-hidden="true">'+svgUse('buddy','0 0 120 130','mascot')+'</div>');
+}
+var NOFIT=['result','doc','docq','docdx','thanks'];
+function fit(){
+  var b=document.body;b.classList.remove('tight','tighter');
+  if(NOFIT.indexOf(st.view)>-1||(st.view==='open1'&&LV==='long'))return;
+  var vh=(window.visualViewport?window.visualViewport.height:window.innerHeight);
+  var over=function(){return document.documentElement.scrollHeight>vh+2};
+  if(over()){b.classList.add('tight');if(over())b.classList.add('tighter')}
+}
+var _fq=0;function qfit(){cancelAnimationFrame(_fq);_fq=requestAnimationFrame(function(){setTimeout(fit,30)})}
+try{new MutationObserver(function(){decorate();qfit()}).observe(app,{childList:true,subtree:false})}catch(e){}
+window.addEventListener('resize',qfit);if(window.visualViewport)window.visualViewport.addEventListener('resize',qfit);
+intro();
+})();
+</script>
