@@ -38,6 +38,7 @@ python3 test_notlar.py      # tüm notları doğrula
 python3 insertion_sort.py   # adım adım iz
 python3 merge_sort.py
 python3 bst.py
+python3 selection_bubble.py
 ```
 
 ## Döngünün ilk turu — mevcut notlarda bulunanlar
@@ -58,7 +59,7 @@ Kodu yazıp çalıştırmak, notlardaki şu noktaları ortaya çıkardı (4. ad�
 
 ## Sıradaki konular (her biri bir tur)
 
-- [ ] Selection Sort / Bubble Sort — karşılaştırma sayısını sayan sayaç ekle
+- [x] Selection Sort / Bubble Sort — karşılaştırma sayısını sayan sayaç ekle (`Selection_Bubble_Sort`, `kodlar/selection_bubble.py`)
 - [ ] Quick Sort — pivot seçiminin worst case'e etkisi
 - [ ] Binary Search — BST ile ilişkisi
 - [ ] BST silme (3 durum: yaprak, tek çocuk, iki çocuk)

@@ -1,0 +1,30 @@
+[29,10,14,37,13] -> Selection Sort ve Bubble Sort
+
+### Selection Sort (her turda kalan kısmın en küçüğünü başa al)
+
+1. tur -> 10 | 29 14 37 13   (10 ile 29 yer değiştirdi)
+2. tur -> 10 13 | 14 37 29   (13 ile 29 yer değiştirdi)
+3. tur -> 10 13 14 | 37 29   (14 zaten yerinde, takas yok)
+4. tur -> 10 13 14 29 | 37   (29 ile 37 yer değiştirdi)
+
+Karşılaştırma: 4+3+2+1 = 10   Takas: 3
+Best = Average = Worst = O(n^2)  (dizi sıralı olsa bile hep aynı sayıda karşılaştırır)
+
+
+### Bubble Sort (komşuları karşılaştır, büyük olan sağa kayar)
+
+1. tur -> 10 14 29 13 | 37
+2. tur -> 10 14 13 | 29 37
+3. tur -> 10 13 | 14 29 37
+4. tur -> hiç takas yok -> dur
+
+Karşılaştırma: 4+3+2+1 = 10   Takas: 5
+Best case O(n): dizi zaten sıralı (ilk turda takas olmaz, erken çıkış)
+Worst case O(n^2): dizi ters sıralı
+
+
+### Öğrendiğim
+
+Aynı O(n^2) iki farklı şey olabilir: Selection Sort az takas yapar (en fazla n-1)
+ama sıralı diziyi de baştan sona tarar; Bubble Sort çok takas yapar ama sıralı
+diziyi tek turda tanır. n=6 sıralı dizide: Selection 15, Bubble 5 karşılaştırma.

@@ -17,12 +17,14 @@
 
 Big-O gösterimini yazınız.
 
-O(n^2)-->6^2=36
+O(n^2)
+(Not: Big-O tam adım sayısı değil, büyüme hızıdır. n=6 için en kötü durumda
+gerçek karşılaştırma sayısı n(n-1)/2 = 15'tir, 36 değil.)
 
 
-Average Case: Aradığımız sayının ortada olması --> O(n^2)
-Worst Case: Aradığımız sayının sonda olması --> O(n^2)
-Best Case: Aradığımız sayının dizinin en başında olması --> O(n)
+Average Case: Dizi rastgele sıralı --> O(n^2)
+Worst Case: Dizi ters sıralı (her eleman en başa kadar kayar) --> O(n^2)
+Best Case: Dizi zaten sıralı (her eleman tek karşılaştırmada yerinde kalır) --> O(n)
 
 
 
@@ -38,3 +40,9 @@ Best Case: Aradığımız sayının dizinin en başında olması --> O(n)
 2-[3,5,7,8,2,9,4,15,6]
 3-[3,5,7,8,2,9,4,15,6]
 4-[2,3,5,7,8,9,4,15,6]
+
+
+### Öğrendiğim
+
+Best/Worst case "aradığım sayı nerede" sorusu değil, "dizi ne kadar sıralı" sorusudur.
+Kodla doğrulama: python3 kodlar/insertion_sort.py

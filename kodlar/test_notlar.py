@@ -7,12 +7,15 @@ import random
 from bst import ekle, inorder
 from insertion_sort import insertion_sort
 from merge_sort import merge_sort
+from selection_bubble import bubble_sort, selection_sort
 
 # 1) Rastgele dizilerde Python'un sorted() ile karşılaştır
 for _ in range(500):
     d = [random.randint(-50, 50) for _ in range(random.randint(0, 20))]
     assert insertion_sort(d) == sorted(d)
     assert merge_sort(d) == sorted(d)
+    assert selection_sort(d)[0] == sorted(d)
+    assert bubble_sort(d)[0] == sorted(d)
     kok = None
     for x in d:
         kok = ekle(kok, x)
@@ -29,5 +32,11 @@ assert kok.deger == 7
 assert (kok.sol.deger, kok.sag.deger) == (5, 8)
 assert (kok.sol.sol.deger, kok.sol.sag.deger) == (1, 6)
 assert kok.sol.sol.sag.sol.deger == 2 and kok.sol.sol.sag.sag.deger == 4
+
+# Selection / Bubble notundaki sayılar
+assert selection_sort([29, 10, 14, 37, 13]) == ([10, 13, 14, 29, 37], 10, 3)
+assert bubble_sort([29, 10, 14, 37, 13]) == ([10, 13, 14, 29, 37], 10, 5)
+assert selection_sort(list(range(6)))[1] == 15
+assert bubble_sort(list(range(6)))[1] == 5
 
 print("Tüm testler geçti ✓")
